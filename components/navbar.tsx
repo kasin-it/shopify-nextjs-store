@@ -1,5 +1,10 @@
-import { FootprintsIcon } from "lucide-react"
+import { FootprintsIcon, ShoppingBag } from "lucide-react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
+
+const CartModal = dynamic(() => import("./cart-modal"), {
+  loading: () => <ShoppingBag className="text-muted-foreground" />,
+})
 
 function Navbar() {
   return (
@@ -28,6 +33,7 @@ function Navbar() {
         >
           Contact
         </Link>
+        <CartModal />
       </nav>
     </header>
   )
