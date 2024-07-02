@@ -28,120 +28,120 @@ export default function Component() {
     color: [],
     priceRange: [0, 500],
   })
-  const [sortBy, setSortBy] = useState("popularity")
-  const products = useMemo(() => {
-    return [
-      {
-        id: 1,
-        image: "/placeholder.svg",
-        title: "Nike Air Force 1",
-        price: 99.99,
-        brand: "Nike",
-        size: 9,
-        color: "white",
-      },
-      {
-        id: 2,
-        image: "/placeholder.svg",
-        title: "Adidas Ultraboost",
-        price: 179.99,
-        brand: "Adidas",
-        size: 10,
-        color: "black",
-      },
-      {
-        id: 3,
-        image: "/placeholder.svg",
-        title: "Converse Chuck Taylor",
-        price: 59.99,
-        brand: "Converse",
-        size: 8,
-        color: "red",
-      },
-      {
-        id: 4,
-        image: "/placeholder.svg",
-        title: "Vans Old Skool",
-        price: 69.99,
-        brand: "Vans",
-        size: 11,
-        color: "black",
-      },
-      {
-        id: 5,
-        image: "/placeholder.svg",
-        title: "Puma RS-X Toys",
-        price: 89.99,
-        brand: "Puma",
-        size: 9,
-        color: "blue",
-      },
-      {
-        id: 6,
-        image: "/placeholder.svg",
-        title: "New Balance 574",
-        price: 99.99,
-        brand: "New Balance",
-        size: 10,
-        color: "grey",
-      },
-    ]
-      .filter((product) => {
-        const { brand, size, color, priceRange } = filters
-        return (
-          product.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          (brand.length === 0 || brand.includes(product.brand)) &&
-          (size.length === 0 || size.includes(product.size)) &&
-          (color.length === 0 || color.includes(product.color)) &&
-          product.price >= priceRange[0] &&
-          product.price <= priceRange[1]
-        )
-      })
-      .sort((a, b) => {
-        switch (sortBy) {
-          case "price-asc":
-            return a.price - b.price
-          case "price-desc":
-            return b.price - a.price
-          case "popularity":
-            return b.id - a.id
-          case "newest":
-            return new Date(b.id) - new Date(a.id)
-          default:
-            return 0
-        }
-      })
-  }, [searchTerm, filters, sortBy])
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value)
-  }
-  const handleFilterChange = (type, value) => {
-    setFilters((prevFilters) => {
-      const newFilters = { ...prevFilters }
-      if (type === "brand") {
-        newFilters.brand = newFilters.brand.includes(value)
-          ? newFilters.brand.filter((item) => item !== value)
-          : [...newFilters.brand, value]
-      } else if (type === "size") {
-        newFilters.size = newFilters.size.includes(value)
-          ? newFilters.size.filter((item) => item !== value)
-          : [...newFilters.size, value]
-      } else if (type === "color") {
-        newFilters.color = newFilters.color.includes(value)
-          ? newFilters.color.filter((item) => item !== value)
-          : [...newFilters.color, value]
-      } else if (type === "priceRange") {
-        newFilters.priceRange = value
-      }
-      return newFilters
-    })
-  }
-  const handleSortChange = (value) => {
-    setSortBy(value)
-  }
+  // const [sortBy, setSortBy] = useState("popularity")
+  // const products = useMemo(() => {
+  //   return [
+  //     {
+  //       id: 1,
+  //       image: "/placeholder.svg",
+  //       title: "Nike Air Force 1",
+  //       price: 99.99,
+  //       brand: "Nike",
+  //       size: 9,
+  //       color: "white",
+  //     },
+  //     {
+  //       id: 2,
+  //       image: "/placeholder.svg",
+  //       title: "Adidas Ultraboost",
+  //       price: 179.99,
+  //       brand: "Adidas",
+  //       size: 10,
+  //       color: "black",
+  //     },
+  //     {
+  //       id: 3,
+  //       image: "/placeholder.svg",
+  //       title: "Converse Chuck Taylor",
+  //       price: 59.99,
+  //       brand: "Converse",
+  //       size: 8,
+  //       color: "red",
+  //     },
+  //     {
+  //       id: 4,
+  //       image: "/placeholder.svg",
+  //       title: "Vans Old Skool",
+  //       price: 69.99,
+  //       brand: "Vans",
+  //       size: 11,
+  //       color: "black",
+  //     },
+  //     {
+  //       id: 5,
+  //       image: "/placeholder.svg",
+  //       title: "Puma RS-X Toys",
+  //       price: 89.99,
+  //       brand: "Puma",
+  //       size: 9,
+  //       color: "blue",
+  //     },
+  //     {
+  //       id: 6,
+  //       image: "/placeholder.svg",
+  //       title: "New Balance 574",
+  //       price: 99.99,
+  //       brand: "New Balance",
+  //       size: 10,
+  //       color: "grey",
+  //     },
+  //   ]
+  //     .filter((product) => {
+  //       const { brand, size, color, priceRange } = filters
+  //       return (
+  //         product.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+  //         (brand.length === 0 || brand.includes(product.brand)) &&
+  //         (size.length === 0 || size.includes(product.size)) &&
+  //         (color.length === 0 || color.includes(product.color)) &&
+  //         product.price >= priceRange[0] &&
+  //         product.price <= priceRange[1]
+  //       )
+  //     })
+  //     .sort((a, b) => {
+  //       switch (sortBy) {
+  //         case "price-asc":
+  //           return a.price - b.price
+  //         case "price-desc":
+  //           return b.price - a.price
+  //         case "popularity":
+  //           return b.id - a.id
+  //         case "newest":
+  //           return new Date(b.id) - new Date(a.id)
+  //         default:
+  //           return 0
+  //       }
+  //     })
+  // }, [searchTerm, filters, sortBy])
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value)
+  // }
+  // const handleFilterChange = (type, value) => {
+  //   setFilters((prevFilters) => {
+  //     const newFilters = { ...prevFilters }
+  //     if (type === "brand") {
+  //       newFilters.brand = newFilters.brand.includes(value)
+  //         ? newFilters.brand.filter((item) => item !== value)
+  //         : [...newFilters.brand, value]
+  //     } else if (type === "size") {
+  //       newFilters.size = newFilters.size.includes(value)
+  //         ? newFilters.size.filter((item) => item !== value)
+  //         : [...newFilters.size, value]
+  //     } else if (type === "color") {
+  //       newFilters.color = newFilters.color.includes(value)
+  //         ? newFilters.color.filter((item) => item !== value)
+  //         : [...newFilters.color, value]
+  //     } else if (type === "priceRange") {
+  //       newFilters.priceRange = value
+  //     }
+  //     return newFilters
+  //   })
+  // }
+  // const handleSortChange = (value) => {
+  //   setSortBy(value)
+  // }
   return (
     <div className="container mx-auto px-4 md:px-6 py-8">
-      <div className="mb-8">
+      {/* <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Shoe Shop</h1>
         <p className="text-muted-foreground">
           Browse our selection of the latest shoes.
@@ -382,7 +382,7 @@ export default function Component() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

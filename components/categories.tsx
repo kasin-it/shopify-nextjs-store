@@ -54,10 +54,10 @@ function Categories({
                 <CardContent className="flex flex-col items-center justify-center space-y-2 p-4">
                   <img
                     src="/placeholder.svg"
-                    width="200"
-                    height="200"
+                    width="600"
+                    height="600"
                     alt="Sneakers"
-                    className="aspect-square overflow-hidden rounded-xl object-cover"
+                    className="aspect-video sm:aspect-square overflow-hidden rounded-xl object-cover"
                   />
                   <div className="space-y-1 w-full">
                     <h3 className="text-lg font-bold">{category.name}</h3>
