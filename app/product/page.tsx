@@ -162,6 +162,7 @@ async function ProductPage() {
                 </SelectContent>
               </Select>
             </div>
+            <p className="">Cost of delivery: $10</p>
             <Button size="lg">Add to cart</Button>
           </form>
         </div>
