@@ -5,6 +5,9 @@ import {
 } from "@shopify/storefront-api-client"
 import { createAdminApiClient } from "@shopify/admin-api-client"
 import { PlatformCollection } from "./types"
+import { SingleCollectionQuery } from "./types/storefront.generated"
+import { getCollectionQuery } from "./queries/collection.storefront"
+import { normalizeCollection } from "./normalize"
 
 export function createShopifyClient(shopName: string, accessToken: string) {
   const storeDomain = process.env.SHOPIFY_STORE_DOMAIN || ""
@@ -49,7 +52,7 @@ export function createShopifyClient(shopName: string, accessToken: string) {
     // deleteCartItem(client!, cartId, itemIds),
     // getCart: async (cartId: string) => getCart(client!, cartId),
     // getCollections: async (limit?: number) => getCollections(client!, limit),
-    // getCollection: async (handle: string) => getCollection(client!, handle),
+    getCollection: async (handle: string) => getCollection(client!, handle),
     // getCollectionById: async (id: string) => getCollectionById(client!, id),
     // createUser: async (input: PlatformUserCreateInput) =>
     // createUser(client!, input),
@@ -58,14 +61,14 @@ export function createShopifyClient(shopName: string, accessToken: string) {
   }
 }
 
-// async function getCollection(
-//   client: StorefrontApiClient,
-//   handle: string
-// ): Promise<PlatformCollection | undefined | null> {
-//   const collection = await client.request<SingleCollectionQuery>(
-//     getCollectionQuery,
-//     { variables: { handle } }
-//   )
+async function getCollection(
+  client: StorefrontApiClient,
+  handle: string
+): Promise<PlatformCollection | undefined | null> {
+  const collection = await client.request<SingleCollectionQuery>(
+    getCollectionQuery,
+    { variables: { handle } }
+  )
 
-//   return normalizeCollection(collection.data?.collection)
-// }
+  return normalizeCollection(collection.data?.collection)
+}

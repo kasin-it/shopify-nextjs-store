@@ -1,5 +1,6 @@
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import Image from "next/image"
 import {
   Select,
   SelectTrigger,
@@ -20,7 +21,7 @@ async function ProductPage() {
     <main>
       <section className="container grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-5xl">
         <div className="grid gap-4">
-          <img
+          <Image
             src="/placeholder.svg"
             alt="Product Image"
             width={600}
@@ -29,7 +30,7 @@ async function ProductPage() {
           />
           <div className="hidden md:flex gap-4 items-start">
             <button className="border hover:border-primary rounded-lg overflow-hidden transition-colors">
-              <img
+              <Image
                 src="/placeholder.svg"
                 alt="Preview thumbnail"
                 width={100}
@@ -39,7 +40,7 @@ async function ProductPage() {
               <span className="sr-only">View Image 1</span>
             </button>
             <button className="border hover:border-primary rounded-lg overflow-hidden transition-colors">
-              <img
+              <Image
                 src="/placeholder.svg"
                 alt="Preview thumbnail"
                 width={100}
@@ -49,7 +50,7 @@ async function ProductPage() {
               <span className="sr-only">View Image 2</span>
             </button>
             <button className="border hover:border-primary rounded-lg overflow-hidden transition-colors">
-              <img
+              <Image
                 src="/placeholder.svg"
                 alt="Preview thumbnail"
                 width={100}

@@ -11,6 +11,7 @@ import {
 } from "./ui/select"
 import { Button } from "./ui/button"
 import { ShoppingBag } from "lucide-react"
+import Image from "next/image"
 
 function CartModal() {
   const cartItems = [
@@ -56,7 +57,7 @@ function CartModal() {
                   key={item.id}
                   className="grid grid-cols-2 min-[420px]:grid-cols-[100px_1fr_100px] items-center gap-4"
                 >
-                  <img
+                  <Image
                     src="/placeholder.svg"
                     alt={item.name}
                     width={100}

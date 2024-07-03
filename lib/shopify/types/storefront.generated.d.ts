@@ -1,6 +1,6 @@
-/* eslint-disable eslint-comments/disable-enable-pair */
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
+// eslint-disable eslint-comments/disable-enable-pair 
+// eslint-disable eslint-comments/no-unlimited-disable 
+// eslint-disable 
 import type * as StorefrontTypes from './storefront.types';
 
 export type SingleCartFragment = (

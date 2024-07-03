@@ -3,6 +3,7 @@ import { Card, CardContent } from "./ui/card"
 import Link from "next/link"
 import VariantWrapper from "./variant-wrapper"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 interface CategoryItem {
   name: string
@@ -52,7 +53,7 @@ function Categories({
             <Link href={category.href} key={category.name}>
               <Card>
                 <CardContent className="flex flex-col items-center justify-center space-y-2 p-4">
-                  <img
+                  <Image
                     src="/placeholder.svg"
                     width="600"
                     height="600"

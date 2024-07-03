@@ -1,6 +1,6 @@
 import React from "react"
 import { Card, CardContent } from "./ui/card"
-import { Button } from "./ui/button"
+import Image from "next/image"
 import Link from "next/link"
 import VariantWrapper from "./variant-wrapper"
 import { cn } from "@/lib/utils"
@@ -53,7 +53,7 @@ function TrendingItems({
             <Link href={product.href} key={product.name}>
               <Card>
                 <CardContent className="flex flex-col items-start justify-center space-y-2 p-4">
-                  <img
+                  <Image
                     src="/placeholder.svg"
                     width="600"
                     height="600"

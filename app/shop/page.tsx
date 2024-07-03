@@ -19,6 +19,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ListOrderedIcon } from "lucide-react"
+import Image from "next/image"
 
 export default function Component() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -422,7 +423,7 @@ export default function Component() {
               className="bg-background p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow flex flex-col justify-between"
             >
               <div>
-                <img
+                <Image
                   src="/placeholder.svg"
                   alt={product.title}
                   width={300}
