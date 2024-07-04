@@ -13,14 +13,29 @@ import Specification from "@/views/Product/specification"
 import Reviews from "@/views/Product/reviews"
 import TrendingItems from "@/components/trending-items"
 import { getPopularProducts } from "@/actions/product.actions"
+import { createShopifyClient } from "@/lib/shopify"
+import { productFragment } from "@/lib/shopify/fragments/product"
 
 async function ProductPage() {
-  const products = await getPopularProducts()
+  const client = await createShopifyClient()
+
+  const x = await client.client.request(`#graphql
+  query {
+      pages(first: 1) {
+        edges {
+          node {
+            title
+          }
+        }
+      }
+    }
+`)
 
   return (
     <main>
       <section className="container grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-5xl">
         <div className="grid gap-4">
+          {JSON.stringify(x.data)}
           <Image
             src="/placeholder.svg"
             alt="Product Image"
@@ -170,13 +185,13 @@ async function ProductPage() {
       </section>
       <Specification />
       <Reviews />
-      <TrendingItems
-        products={products}
+      {/* <TrendingItems
+        // products={products}
         tag="Trending"
         title="Trending"
         variant="secondary"
         desc="Explore our curated collection of the latest and most popular shoe styles."
-      />
+      /> */}
     </main>
   )
 }
