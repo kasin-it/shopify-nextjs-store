@@ -43,6 +43,7 @@ import {
 import {
   getProductQuery,
   getProductsByHandleQuery,
+  getProductsHandleQuery,
 } from "./queries/product.storefront"
 
 import type {
@@ -55,6 +56,7 @@ import type {
   MenuQuery,
   PagesQuery,
   ProductsByHandleQuery,
+  ProductsHandleQuery,
   SingleCartQuery,
   SingleCollectionByIdQuery,
   SingleCollectionQuery,
@@ -107,7 +109,8 @@ export function createShopifyClient() {
 
   // prettier-ignore
   return {
-    client: adminClient,
+    shopifyAPI: client,
+    getProductsHandle: async () => getProductsHandle(client!),
     getMenu: async (handle?: string) => getMenu(client!, handle),
     getProduct: async (id: string) => getProduct(client!, id),
     getProductByHandle: async (handle: string) => getProductByHandle(client!, handle),
@@ -150,6 +153,14 @@ async function getMenu(
   }
 }
 
+async function getProductsHandle(client: StorefrontApiClient) {
+  const response = await client.request<ProductsHandleQuery>(
+    getProductsHandleQuery
+  )
+
+  return response.data?.products?.edges?.map((edge) => edge.node.handle) || []
+}
+
 async function getProduct(
   client: StorefrontApiClient,
   id: string
@@ -167,6 +178,8 @@ async function getProductByHandle(client: StorefrontApiClient, handle: string) {
     getProductsByHandleQuery,
     { variables: { query: `'${handle}'` } }
   )
+
+  console.log(response)
   const product = response.data?.products?.edges?.find(Boolean)?.node
 
   return normalizeProduct(product)

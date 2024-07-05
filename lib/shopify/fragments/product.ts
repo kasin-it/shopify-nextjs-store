@@ -48,6 +48,7 @@ const productFragment = `#graphql
             name
             value
           }
+          # price
           price {
             amount
             currencyCode

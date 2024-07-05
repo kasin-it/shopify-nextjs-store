@@ -1,27 +1,16 @@
 import { productFragment } from "../fragments/product"
 
-export const getProductFilters = `#graphql
-  query ProductFilters {
-  products(first: 1) {
-    nodes {
-      options {
-        values
-        name
-      }
-      priceRange {
-        maxVariantPrice {
-          amount
-          currencyCode
-        }
-        minVariantPrice {
-          amount
-          currencyCode
+export const getProductsHandleQuery = `#graphql
+    query ProductsHandle {
+      products(first: 250) {
+        edges {
+          node {
+            handle
+          }
         }
       }
     }
-  }
-}
-`
+  `
 
 export const getProductQuery = `#graphql
   query SingleProduct($id: ID!) {

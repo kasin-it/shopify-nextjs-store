@@ -15,27 +15,42 @@ import TrendingItems from "@/components/trending-items"
 import { getPopularProducts } from "@/actions/product.actions"
 import { createShopifyClient } from "@/lib/shopify"
 import { productFragment } from "@/lib/shopify/fragments/product"
+import {
+  ProductsByHandleQuery,
+  SingleProductFragment,
+  SingleProductQuery,
+} from "@/lib/shopify/types/storefront.generated"
+import { notFound } from "next/navigation"
+import { getProductsByHandleQuery } from "@/lib/shopify/queries/product.storefront"
 
-async function ProductPage() {
-  const client = await createShopifyClient()
+export const generateStaticParams = async () => {
+  const client = createShopifyClient()
+  const productsHandle = await client.getProductsHandle()
 
-  const x = await client.client.request(`#graphql
-  query {
-      pages(first: 1) {
-        edges {
-          node {
-            title
-          }
-        }
-      }
-    }
-`)
+  return (
+    productsHandle.map((handle) => ({
+      params: {
+        productId: handle,
+      },
+    })) || []
+  )
+}
+
+async function ProductPage({
+  params: { productId },
+}: {
+  params: { productId: string }
+}) {
+  const client = createShopifyClient()
+
+  const product = await client.getProductByHandle(productId)
+
+  if (!product) notFound()
 
   return (
     <main>
       <section className="container grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-5xl">
         <div className="grid gap-4">
-          {JSON.stringify(x.data)}
           <Image
             src="/placeholder.svg"
             alt="Product Image"
@@ -78,11 +93,9 @@ async function ProductPage() {
         </div>
         <div className="grid gap-4 md:gap-10 items-start">
           <div className="grid gap-4">
-            <h1 className="font-bold text-3xl lg:text-4xl">
-              Acme Prism T-Shirt
-            </h1>
+            <h1 className="font-bold text-3xl lg:text-4xl">{product.title}</h1>
             <div>
-              <p>60% combed ringspun cotton/40% polyester jersey tee.</p>
+              <p>{product.description}</p>
             </div>
           </div>
           <form className="grid gap-4 md:gap-10">

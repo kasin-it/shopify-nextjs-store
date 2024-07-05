@@ -24591,7 +24591,7 @@ export type MarketWebPresence = Node & {
   /** The associated market. */
   market: Market;
   /**
-   * The list of root URLs for each of the web presence’s locales. As of version `2024-04` this value will no longer have a trailing slash.
+   * The list of root URLs for each of the web presence’s locales. As of version `2024-07` this value will no longer have a trailing slash.
    *
    */
   rootUrls: Array<MarketWebPresenceRootUrl>;
@@ -34224,12 +34224,12 @@ export type Order = CommentEventSubject & HasEvents & HasLocalizationExtensions 
   risk: OrderRiskSummary;
   /**
    * The fraud risk level of the order.
-   * @deprecated This field is deprecated in version 2024-04. Please use OrderRiskAssessment.riskLevel
+   * @deprecated This field is deprecated in version 2024-07. Please use OrderRiskAssessment.riskLevel
    */
   riskLevel: OrderRiskLevel;
   /**
    * A list of risks associated with the order.
-   * @deprecated This field is deprecated in version 2024-04. Please use OrderRiskAssessment
+   * @deprecated This field is deprecated in version 2024-07. Please use OrderRiskAssessment
    */
   risks: Array<OrderRisk>;
   /** The mailing address of the customer. */
@@ -35591,15 +35591,15 @@ export enum OrderReturnStatus {
 
 /**
  * Represents a fraud check on an order.
- * As of version 2024-04 this resource is deprecated. Risk Assessments can be queried via the
- * [OrderRisk Assessments API](https://shopify.dev/api/admin-graphql/2024-04/objects/OrderRiskAssessment).
+ * As of version 2024-07 this resource is deprecated. Risk Assessments can be queried via the
+ * [OrderRisk Assessments API](https://shopify.dev/api/admin-graphql/2024-07/objects/OrderRiskAssessment).
  *
  */
 export type OrderRisk = {
   __typename?: 'OrderRisk';
   /**
    * Whether the risk level is shown in the Shopify admin. If false, then this order risk is ignored when Shopify determines the overall risk level for the order.
-   * @deprecated This field is deprecated in version 2024-04
+   * @deprecated This field is deprecated in version 2024-07
    */
   display: Scalars['Boolean']['output'];
   /**
@@ -35607,12 +35607,12 @@ export type OrderRisk = {
    *
    * The level can be set by Shopify risk analysis or by an app.
    *
-   * @deprecated This field is deprecated in version 2024-04. Please use OrderRiskAssessment.riskLevel
+   * @deprecated This field is deprecated in version 2024-07. Please use OrderRiskAssessment.riskLevel
    */
   level?: Maybe<OrderRiskLevel>;
   /**
    * The risk message that's shown to the merchant in the Shopify admin.
-   * @deprecated This field is deprecated in version 2024-04
+   * @deprecated This field is deprecated in version 2024-07
    */
   message?: Maybe<Scalars['String']['output']>;
 };
@@ -38439,7 +38439,7 @@ export type Product = HasMetafieldDefinitions & HasMetafields & HasPublishedTran
   privateMetafields: PrivateMetafieldConnection;
   /**
    * The product category specified by the merchant.
-   * @deprecated Deprecated in API version 2024-04. Use `category` instead.
+   * @deprecated Deprecated in API version 2024-07. Use `category` instead.
    */
   productCategory?: Maybe<ProductCategory>;
   /**
