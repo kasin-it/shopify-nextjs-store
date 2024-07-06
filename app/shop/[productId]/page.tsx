@@ -1,5 +1,13 @@
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import Image from "next/image"
 import {
   Select,
@@ -22,6 +30,7 @@ import {
 } from "@/lib/shopify/types/storefront.generated"
 import { notFound } from "next/navigation"
 import { getProductsByHandleQuery } from "@/lib/shopify/queries/product.storefront"
+import Gallery from "@/views/Product/gallery"
 
 export const generateStaticParams = async () => {
   const client = createShopifyClient()
@@ -50,47 +59,7 @@ async function ProductPage({
   return (
     <main>
       <section className="container grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-5xl">
-        <div className="grid gap-4">
-          <Image
-            src="/placeholder.svg"
-            alt="Product Image"
-            width={600}
-            height={900}
-            className="aspect-[2/3] object-cover border w-full rounded-lg overflow-hidden"
-          />
-          <div className="hidden md:flex gap-4 items-start">
-            <button className="border hover:border-primary rounded-lg overflow-hidden transition-colors">
-              <Image
-                src="/placeholder.svg"
-                alt="Preview thumbnail"
-                width={100}
-                height={120}
-                className="aspect-[5/6] object-cover"
-              />
-              <span className="sr-only">View Image 1</span>
-            </button>
-            <button className="border hover:border-primary rounded-lg overflow-hidden transition-colors">
-              <Image
-                src="/placeholder.svg"
-                alt="Preview thumbnail"
-                width={100}
-                height={120}
-                className="aspect-[5/6] object-cover"
-              />
-              <span className="sr-only">View Image 2</span>
-            </button>
-            <button className="border hover:border-primary rounded-lg overflow-hidden transition-colors">
-              <Image
-                src="/placeholder.svg"
-                alt="Preview thumbnail"
-                width={100}
-                height={120}
-                className="aspect-[5/6] object-cover"
-              />
-              <span className="sr-only">View Image 3</span>
-            </button>
-          </div>
-        </div>
+        <Gallery images={product.images} />
         <div className="grid gap-4 md:gap-10 items-start">
           <div className="grid gap-4">
             <h1 className="font-bold text-3xl lg:text-4xl">{product.title}</h1>
