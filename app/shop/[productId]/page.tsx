@@ -31,6 +31,7 @@ import {
 import { notFound } from "next/navigation"
 import { getProductsByHandleQuery } from "@/lib/shopify/queries/product.storefront"
 import Gallery from "@/views/Product/gallery"
+import Colors from "@/views/Product/colors"
 
 export const generateStaticParams = async () => {
   const client = createShopifyClient()
@@ -56,6 +57,9 @@ async function ProductPage({
 
   if (!product) notFound()
 
+  const colors = product.options.filter((option) => option.name === "Color")[0]
+    .values
+
   return (
     <main>
       <section className="container grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-5xl">
@@ -68,38 +72,7 @@ async function ProductPage({
             </div>
           </div>
           <form className="grid gap-4 md:gap-10">
-            <div className="grid gap-2">
-              <Label htmlFor="color" className="text-base">
-                Color
-              </Label>
-              <RadioGroup
-                id="color"
-                defaultValue="black"
-                className="flex items-center gap-2"
-              >
-                <Label
-                  htmlFor="color-black"
-                  className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-muted"
-                >
-                  <RadioGroupItem id="color-black" value="black" />
-                  Black
-                </Label>
-                <Label
-                  htmlFor="color-white"
-                  className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-muted"
-                >
-                  <RadioGroupItem id="color-white" value="white" />
-                  White
-                </Label>
-                <Label
-                  htmlFor="color-blue"
-                  className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-muted"
-                >
-                  <RadioGroupItem id="color-blue" value="blue" />
-                  Blue
-                </Label>
-              </RadioGroup>
-            </div>
+            <Colors colors={colors} />
             <div className="grid gap-2">
               <Label htmlFor="size" className="text-base">
                 Size
