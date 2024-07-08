@@ -32,6 +32,8 @@ import { notFound } from "next/navigation"
 import { getProductsByHandleQuery } from "@/lib/shopify/queries/product.storefront"
 import Gallery from "@/views/Product/gallery"
 import Variants from "@/views/Product/variants"
+import Description from "@/views/Product/description"
+import FAQ from "@/components/faq"
 
 export const generateStaticParams = async () => {
   const client = createShopifyClient()
@@ -57,18 +59,50 @@ async function ProductPage({
 
   if (!product) notFound()
 
-  const colors = product.options.filter((option) => option.name === "Color")[0]
-    .values
+  const questions = [
+    {
+      question: "What materials are the shoes made of?",
+      answer:
+        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
+    },
+    {
+      question: "What materials are the shoes made of?",
+      answer:
+        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
+    },
+    {
+      question: "What materials are the shoes made of?",
+      answer:
+        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
+    },
+    {
+      question: "What materials are the shoes made of?",
+      answer:
+        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
+    },
+    {
+      question: "What materials are the shoes made of?",
+      answer:
+        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
+    },
+    {
+      question: "What materials are the shoes made of?",
+      answer:
+        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
+    },
+  ]
 
   return (
     <main>
       <section className="container grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-5xl">
-        <Gallery images={product.images} />
+        <div className="md:sticky top-10">
+          <Gallery images={product.images} />
+        </div>
         <div className="grid gap-4 md:gap-10 items-start">
           <div className="grid gap-4">
             <h1 className="font-bold text-3xl lg:text-4xl">{product.title}</h1>
             <div>
-              <p>{product.description}</p>
+              <p>{product.priceRange.maxVariantPrice.amount}</p>
             </div>
           </div>
           <form className="grid gap-4 md:gap-10">
@@ -100,10 +134,12 @@ async function ProductPage({
             <p className="">Cost of delivery: $10</p>
             <Button size="lg">Add to cart</Button>
           </form>
+          <p>{product.description}</p>
         </div>
       </section>
       <Specification />
-      <Reviews />
+      <FAQ questions={questions} />
+      <Reviews variant="secondary" />
       {/* <TrendingItems
         // products={products}
         tag="Trending"
