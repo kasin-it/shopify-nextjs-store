@@ -1,14 +1,5 @@
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import {
-  Carousel,
-  CarouselApi,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
-import Image from "next/image"
+
 import {
   Select,
   SelectTrigger,
@@ -20,19 +11,11 @@ import { Button } from "@/components/ui/button"
 import Specification from "@/views/Product/specification"
 import Reviews from "@/views/Product/reviews"
 import TrendingItems from "@/components/trending-items"
-import { getPopularProducts } from "@/actions/product.actions"
 import { createShopifyClient } from "@/lib/shopify"
-import { productFragment } from "@/lib/shopify/fragments/product"
-import {
-  ProductsByHandleQuery,
-  SingleProductFragment,
-  SingleProductQuery,
-} from "@/lib/shopify/types/storefront.generated"
+
 import { notFound } from "next/navigation"
-import { getProductsByHandleQuery } from "@/lib/shopify/queries/product.storefront"
 import Gallery from "@/views/Product/gallery"
 import Variants from "@/views/Product/variants"
-import Description from "@/views/Product/description"
 import FAQ from "@/components/faq"
 
 export const generateStaticParams = async () => {
