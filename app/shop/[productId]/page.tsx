@@ -31,7 +31,7 @@ import {
 import { notFound } from "next/navigation"
 import { getProductsByHandleQuery } from "@/lib/shopify/queries/product.storefront"
 import Gallery from "@/views/Product/gallery"
-import Colors from "@/views/Product/colors"
+import Variants from "@/views/Product/variants"
 
 export const generateStaticParams = async () => {
   const client = createShopifyClient()
@@ -72,50 +72,14 @@ async function ProductPage({
             </div>
           </div>
           <form className="grid gap-4 md:gap-10">
-            <Colors colors={colors} />
-            <div className="grid gap-2">
-              <Label htmlFor="size" className="text-base">
-                Size
-              </Label>
-              <RadioGroup
-                id="size"
-                defaultValue="m"
-                className="flex items-center gap-2"
-              >
-                <Label
-                  htmlFor="size-xs"
-                  className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-muted"
-                >
-                  <RadioGroupItem id="size-xs" value="xs" />
-                  XS
-                </Label>
-                <Label
-                  htmlFor="size-s"
-                  className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-muted"
-                >
-                  <RadioGroupItem id="size-s" value="s" />S
-                </Label>
-                <Label
-                  htmlFor="size-m"
-                  className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-muted"
-                >
-                  <RadioGroupItem id="size-m" value="m" />M
-                </Label>
-                <Label
-                  htmlFor="size-l"
-                  className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-muted"
-                >
-                  <RadioGroupItem id="size-l" value="l" />L
-                </Label>
-                <Label
-                  htmlFor="size-xl"
-                  className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-muted"
-                >
-                  <RadioGroupItem id="size-xl" value="xl" />
-                  XL
-                </Label>
-              </RadioGroup>
-            </div>
+            {product.options.map((option) => (
+              <Variants
+                key={option.name}
+                title={option.name}
+                values={option.values}
+              />
+            ))}
+
             <div className="grid gap-2">
               <Label htmlFor="quantity" className="text-base">
                 Quantity
