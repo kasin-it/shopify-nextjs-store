@@ -48,6 +48,7 @@ export function normalizeProduct(
     seo,
     updatedAt,
     createdAt,
+    metafields,
     flatOptions: Object.fromEntries(
       options?.map((option) => [option.name, option.values])
     ),

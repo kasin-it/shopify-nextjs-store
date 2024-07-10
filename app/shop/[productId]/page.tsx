@@ -22,6 +22,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { ChevronDownIcon } from "lucide-react"
+import { slugToName } from "@/lib/utils"
 
 export const generateStaticParams = async () => {
   const client = createShopifyClient()
@@ -46,32 +47,6 @@ async function ProductPage({
   const product = await client.getProductByHandle(productId)
 
   if (!product) notFound()
-
-  const x = await client.shopifyAPI.request<any>(`
-      query {
-        products(first: 100) {
-          edges {
-            node {
-            id
-            title
-            metafields(identifiers: [
-              {namespace: "custom", key: "details"},
-              {namespace: "custom", key: "delivery"},
-              {namespace: "custom", key: "size_and_fit"},
-            ]) {
-              key
-              value
-              
-              }
-            }
-          }
-        }
-      }
-    `)
-
-  // console.log(x.data?.products.edges[0].node.metafields)
-  // console.log(product.metafields)
-
   const questions = [
     {
       question: "What materials are the shoes made of?",
@@ -148,33 +123,18 @@ async function ProductPage({
             <Button size="lg">Add to cart</Button>
           </form>
           <p>{product.description}</p>
-          <Collapsible>
-            <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
-              Product Details
-              <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
-              x
-            </CollapsibleContent>
-          </Collapsible>
-          <Collapsible>
-            <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
-              Size and fit
-              <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
-              x
-            </CollapsibleContent>
-          </Collapsible>
-          <Collapsible>
-            <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
-              Delivery & returns
-              <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
-              x
-            </CollapsibleContent>
-          </Collapsible>
+          {product.metafields?.length > 0 &&
+            product.metafields.map((metafield) => (
+              <Collapsible key={metafield!.key}>
+                <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
+                  {slugToName(metafield?.key || "", "_")}
+                  <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
+                  {metafield?.value}
+                </CollapsibleContent>
+              </Collapsible>
+            ))}
         </div>
       </section>
       <Reviews variant="secondary" />

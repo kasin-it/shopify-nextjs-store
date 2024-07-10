@@ -2,6 +2,17 @@ export interface PlatformMenu {
   items: { title: string; url: string }[]
 }
 
+interface BaseMetafield {
+  key: string
+  value: string
+}
+
+type Metafield = Pick<BaseMetafield, "key" | "value">
+
+type Maybe<T> = T | null
+
+type Metafields = Maybe<Metafield>[]
+
 export interface PlatformProduct {
   id: string
   handle: string
@@ -26,7 +37,7 @@ export interface PlatformProduct {
     description?: string | null | undefined
     title?: string | null | undefined
   }
-  metafields: { key: string; value: string }[]
+  metafields: Metafields
 }
 
 export interface PlatformProductOptions {
