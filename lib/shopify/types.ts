@@ -26,7 +26,7 @@ export interface PlatformProduct {
     description?: string | null | undefined
     title?: string | null | undefined
   }
-  metafields: any[]
+  metafields: { key: string; value: string }[]
 }
 
 export interface PlatformProductOptions {

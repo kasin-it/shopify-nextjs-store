@@ -72,11 +72,16 @@ const productFragment = `#graphql
     tags
     updatedAt
     createdAt
-    metafield(key: "") {
-          namespace
-          value
-    }
-  }
+      metafields(identifiers: [
+              {namespace: "custom", key: "details"},
+              {namespace: "custom", key: "delivery"},
+              {namespace: "custom", key: "size_and_fit"},
+            ]) {
+              key
+              value
+              
+              }
+      }
   ${imageFragment}
   ${seoFragment}
 `

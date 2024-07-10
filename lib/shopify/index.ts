@@ -179,6 +179,8 @@ async function getProductByHandle(client: StorefrontApiClient, handle: string) {
     { variables: { query: `'${handle}'` } }
   )
 
+  console.log(response.data?.products?.edges)
+
   const product = response.data?.products?.edges?.find(Boolean)?.node
 
   return normalizeProduct(product)

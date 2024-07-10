@@ -1707,6 +1707,7 @@ export type SingleProductQuery = {
       | "tags"
       | "updatedAt"
       | "createdAt"
+      | "metafields"
     > & {
       options: Array<
         Pick<StorefrontTypes.ProductOption, "id" | "name" | "values">

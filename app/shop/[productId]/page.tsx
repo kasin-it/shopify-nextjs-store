@@ -47,7 +47,30 @@ async function ProductPage({
 
   if (!product) notFound()
 
-  console.log(product.metafields)
+  const x = await client.shopifyAPI.request<any>(`
+      query {
+        products(first: 100) {
+          edges {
+            node {
+            id
+            title
+            metafields(identifiers: [
+              {namespace: "custom", key: "details"},
+              {namespace: "custom", key: "delivery"},
+              {namespace: "custom", key: "size_and_fit"},
+            ]) {
+              key
+              value
+              
+              }
+            }
+          }
+        }
+      }
+    `)
+
+  // console.log(x.data?.products.edges[0].node.metafields)
+  // console.log(product.metafields)
 
   const questions = [
     {

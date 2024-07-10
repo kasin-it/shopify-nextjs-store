@@ -31,6 +31,7 @@ export function normalizeProduct(
     createdAt,
     collections,
     seo,
+    metafields,
   } = product
 
   return {
