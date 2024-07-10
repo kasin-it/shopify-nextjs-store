@@ -31,6 +31,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
     "@shopify/admin-api-client": "^1.0.0",
     "@shopify/api-codegen-preset": "^1.0.1",
     "@shopify/storefront-api-client": "^1.0.0",
