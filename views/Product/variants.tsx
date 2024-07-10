@@ -15,7 +15,7 @@ function Variants({ title, values }: VariantsProps) {
       <RadioGroup
         id={title}
         defaultValue={values[0].toLocaleLowerCase()}
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 flex-wrap"
       >
         {values.map((value) => (
           <Label

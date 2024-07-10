@@ -8,7 +8,6 @@ import {
   SelectItem,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import Specification from "@/views/Product/specification"
 import Reviews from "@/views/Product/reviews"
 import TrendingItems from "@/components/trending-items"
 import { createShopifyClient } from "@/lib/shopify"
@@ -17,6 +16,12 @@ import { notFound } from "next/navigation"
 import Gallery from "@/views/Product/gallery"
 import Variants from "@/views/Product/variants"
 import FAQ from "@/components/faq"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import { ChevronDownIcon } from "lucide-react"
 
 export const generateStaticParams = async () => {
   const client = createShopifyClient()
@@ -41,6 +46,8 @@ async function ProductPage({
   const product = await client.getProductByHandle(productId)
 
   if (!product) notFound()
+
+  console.log(product.metafields)
 
   const questions = [
     {
@@ -118,11 +125,37 @@ async function ProductPage({
             <Button size="lg">Add to cart</Button>
           </form>
           <p>{product.description}</p>
+          <Collapsible>
+            <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
+              Product Details
+              <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
+              x
+            </CollapsibleContent>
+          </Collapsible>
+          <Collapsible>
+            <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
+              Size and fit
+              <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
+              x
+            </CollapsibleContent>
+          </Collapsible>
+          <Collapsible>
+            <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
+              Delivery & returns
+              <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
+              x
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </section>
-      <Specification />
-      <FAQ questions={questions} />
       <Reviews variant="secondary" />
+      <FAQ questions={questions} />
       {/* <TrendingItems
         // products={products}
         tag="Trending"

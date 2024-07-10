@@ -72,6 +72,10 @@ const productFragment = `#graphql
     tags
     updatedAt
     createdAt
+    metafield(key: "") {
+          namespace
+          value
+    }
   }
   ${imageFragment}
   ${seoFragment}
