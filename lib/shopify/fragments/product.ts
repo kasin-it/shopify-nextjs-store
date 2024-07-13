@@ -76,6 +76,7 @@ const productFragment = `#graphql
               {namespace: "custom", key: "details"},
               {namespace: "custom", key: "delivery"},
               {namespace: "custom", key: "size_and_fit"},
+              {namespace: "custom", key: "faq"},
             ]) {
               key
               value

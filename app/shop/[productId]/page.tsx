@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/collapsible"
 import { ChevronDownIcon } from "lucide-react"
 import { slugToName } from "@/lib/utils"
+import { Product } from "@/lib/shopify/types/storefront.types"
+import { PlatformProduct } from "@/lib/shopify/types"
 
 export const generateStaticParams = async () => {
   const client = createShopifyClient()
@@ -37,6 +39,27 @@ export const generateStaticParams = async () => {
   )
 }
 
+function processProductMetafields(product: PlatformProduct) {
+  let faq = { qa_pairs: [] }
+  const otherMetafields: { key: string; value: string }[] = []
+
+  if (product.metafields) {
+    product.metafields.forEach((metafield) => {
+      if (metafield?.key === "faq") {
+        try {
+          faq = JSON.parse(metafield.value)
+        } catch (error) {
+          console.error("Failed to parse FAQ JSON:", error)
+        }
+      } else if (metafield?.key && metafield?.value) {
+        otherMetafields.push({ key: metafield.key, value: metafield.value })
+      }
+    })
+  }
+
+  return { faq, otherMetafields }
+}
+
 async function ProductPage({
   params: { productId },
 }: {
@@ -47,38 +70,8 @@ async function ProductPage({
   const product = await client.getProductByHandle(productId)
 
   if (!product) notFound()
-  const questions = [
-    {
-      question: "What materials are the shoes made of?",
-      answer:
-        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
-    },
-    {
-      question: "What materials are the shoes made of?",
-      answer:
-        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
-    },
-    {
-      question: "What materials are the shoes made of?",
-      answer:
-        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
-    },
-    {
-      question: "What materials are the shoes made of?",
-      answer:
-        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
-    },
-    {
-      question: "What materials are the shoes made of?",
-      answer:
-        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
-    },
-    {
-      question: "What materials are the shoes made of?",
-      answer:
-        "Our shoes are crafted from high-quality materials, including premium leather, breathable mesh, and durable rubber soles. We carefully select the materials to ensure maximum comfort, support, and longevity.",
-    },
-  ]
+
+  const { faq, otherMetafields } = processProductMetafields(product)
 
   return (
     <main>
@@ -123,22 +116,21 @@ async function ProductPage({
             <Button size="lg">Add to cart</Button>
           </form>
           <p>{product.description}</p>
-          {product.metafields?.length > 0 &&
-            product.metafields.map((metafield) => (
-              <Collapsible key={metafield!.key}>
-                <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
-                  {slugToName(metafield?.key || "", "_")}
-                  <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
-                  {metafield?.value}
-                </CollapsibleContent>
-              </Collapsible>
-            ))}
+          {otherMetafields.map((metafield) => (
+            <Collapsible key={metafield!.key}>
+              <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
+                {slugToName(metafield?.key || "", "_")}
+                <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
+                {metafield?.value}
+              </CollapsibleContent>
+            </Collapsible>
+          ))}
         </div>
       </section>
       <Reviews variant="secondary" />
-      <FAQ questions={questions} />
+      <FAQ questions={faq.qa_pairs} />
       {/* <TrendingItems
         // products={products}
         tag="Trending"
