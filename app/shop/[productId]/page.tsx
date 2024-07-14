@@ -15,7 +15,6 @@ import { createShopifyClient } from "@/lib/shopify"
 import { notFound } from "next/navigation"
 import Gallery from "@/views/Product/gallery"
 import Variants from "@/views/Product/variants"
-import FAQ from "@/components/faq"
 import {
   Collapsible,
   CollapsibleContent,
@@ -23,8 +22,8 @@ import {
 } from "@/components/ui/collapsible"
 import { ChevronDownIcon } from "lucide-react"
 import { slugToName } from "@/lib/utils"
-import { Product } from "@/lib/shopify/types/storefront.types"
-import { PlatformProduct } from "@/lib/shopify/types"
+import { MetafieldAccordionItem, PlatformProduct } from "@/lib/shopify/types"
+import FAQ from "@/components/faq"
 
 export const generateStaticParams = async () => {
   const client = createShopifyClient()
@@ -40,24 +39,38 @@ export const generateStaticParams = async () => {
 }
 
 function processProductMetafields(product: PlatformProduct) {
-  let faq = { qa_pairs: [] }
-  const otherMetafields: { key: string; value: string }[] = []
+  let faq: MetafieldAccordionItem[] = []
+  let relatedProducts = []
+  let productAccordions: MetafieldAccordionItem[] = []
 
-  if (product.metafields) {
+  if (product.metafields.length > 0) {
     product.metafields.forEach((metafield) => {
       if (metafield?.key === "faq") {
         try {
-          faq = JSON.parse(metafield.value)
+          faq = JSON.parse(metafield.value).accordion_items
         } catch (error) {
           console.error("Failed to parse FAQ JSON:", error)
         }
-      } else if (metafield?.key && metafield?.value) {
-        otherMetafields.push({ key: metafield.key, value: metafield.value })
+      } else if (metafield?.key === "product_accordions") {
+        try {
+          productAccordions = JSON.parse(metafield.value).accordion_items
+        } catch (error) {
+          console.error("Failed to parse product accordions JSON:", error)
+        }
+      } else if (metafield?.key === "related_products") {
+        // try {
+        //   relatedProducts = JSON.parse(metafield.value)
+        // } catch (error) {
+        //   console.error("Failed to parse related products JSON:", error)
+        // }
+        console.log(metafield.value)
       }
+
+      console.log(metafield)
     })
   }
 
-  return { faq, otherMetafields }
+  return { faq, productAccordions }
 }
 
 async function ProductPage({
@@ -71,7 +84,7 @@ async function ProductPage({
 
   if (!product) notFound()
 
-  const { faq, otherMetafields } = processProductMetafields(product)
+  const { faq, productAccordions } = processProductMetafields(product)
 
   return (
     <main>
@@ -116,21 +129,21 @@ async function ProductPage({
             <Button size="lg">Add to cart</Button>
           </form>
           <p>{product.description}</p>
-          {otherMetafields.map((metafield) => (
-            <Collapsible key={metafield!.key}>
+          {productAccordions.map(({ label, content }) => (
+            <Collapsible key={label}>
               <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
-                {slugToName(metafield?.key || "", "_")}
+                {slugToName(label, "_")}
                 <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
               </CollapsibleTrigger>
               <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
-                {metafield?.value}
+                {content}
               </CollapsibleContent>
             </Collapsible>
           ))}
         </div>
       </section>
       <Reviews variant="secondary" />
-      <FAQ questions={faq.qa_pairs} />
+      <FAQ questions={faq} />
       {/* <TrendingItems
         // products={products}
         tag="Trending"

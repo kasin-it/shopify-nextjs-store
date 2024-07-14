@@ -73,9 +73,8 @@ const productFragment = `#graphql
     updatedAt
     createdAt
       metafields(identifiers: [
-              {namespace: "custom", key: "details"},
-              {namespace: "custom", key: "delivery"},
-              {namespace: "custom", key: "size_and_fit"},
+              {namespace: "custom", key: "product_accordions"},
+              {namespace: "custom", key: "related_products"},
               {namespace: "custom", key: "faq"},
             ]) {
               key

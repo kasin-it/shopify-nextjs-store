@@ -6,14 +6,10 @@ import {
 } from "./ui/collapsible"
 import { ChevronDownIcon } from "lucide-react"
 import VariantWrapper from "./variant-wrapper"
-
-interface QuestionItem {
-  question: string
-  answer: string | React.ReactNode
-}
+import { MetafieldAccordionItem } from "@/lib/shopify/types"
 
 interface FAQProps {
-  questions: QuestionItem[]
+  questions: MetafieldAccordionItem[]
   variant?: "primary" | "secondary"
 }
 
@@ -26,14 +22,14 @@ function FAQ({ questions, variant = "primary" }: FAQProps) {
             Frequently Asked Questions
           </h1>
           <div className="space-y-4">
-            {questions.map(({ question, answer }, index) => (
-              <Collapsible key={index}>
+            {questions.map(({ label, content }) => (
+              <Collapsible key={label}>
                 <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md bg-muted px-4 py-3 text-lg font-medium transition-colors hover:bg-muted/80">
-                  {question}
+                  {label}
                   <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="px-4 pt-4 text-muted-foreground">
-                  {answer}
+                  {content}
                 </CollapsibleContent>
               </Collapsible>
             ))}

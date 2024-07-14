@@ -13,6 +13,11 @@ type Maybe<T> = T | null
 
 type Metafields = Maybe<Metafield>[]
 
+export interface MetafieldAccordionItem {
+  label: string
+  content: string | React.ReactNode
+}
+
 export interface PlatformProduct {
   id: string
   handle: string
