@@ -4,16 +4,10 @@ import Image from "next/image"
 import Link from "next/link"
 import VariantWrapper from "./variant-wrapper"
 import { cn } from "@/lib/utils"
-
-interface TrendingItem {
-  image: string
-  name: string
-  price: string
-  href: string
-}
+import { PlatformProduct } from "@/lib/shopify/types"
 
 interface TrendingItemsProps {
-  products: TrendingItem[]
+  products: PlatformProduct[]
   tag: string
   title: string
   desc: string
@@ -50,7 +44,7 @@ function TrendingItems({
         </div>
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {products.map((product) => (
-            <Link href={product.href} key={product.name}>
+            <Link href={"/shop/" + product.handle} key={product.id}>
               <Card>
                 <CardContent className="flex flex-col items-start justify-center space-y-2 p-4">
                   <Image
@@ -61,8 +55,10 @@ function TrendingItems({
                     className="aspect-video sm:aspect-square overflow-hidden rounded-xl object-cover"
                   />
                   <div className="space-y-1">
-                    <h3 className="text-lg font-bold">{product.name}</h3>
-                    <p className="text-muted-foreground">{product.price}</p>
+                    <h3 className="text-lg font-bold">{product.title}</h3>
+                    <p className="text-muted-foreground">
+                      {product.priceRange.maxVariantPrice.amount}
+                    </p>
                   </div>
                   {/* <Button>Add to Cart</Button> */}
                 </CardContent>

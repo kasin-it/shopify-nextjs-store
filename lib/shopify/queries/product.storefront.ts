@@ -1,5 +1,16 @@
 import { productFragment } from "../fragments/product"
 
+export const getProductsByIdsQuery = `#graphql
+  query ProductsByIds($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      ...on Product {
+        ...singleProduct
+      }  
+    }
+  }
+  ${productFragment}
+`
+
 export const getProductsHandleQuery = `#graphql
     query ProductsHandle {
       products(first: 250) {

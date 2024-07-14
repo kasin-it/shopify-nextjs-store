@@ -43,6 +43,7 @@ import {
 import {
   getProductQuery,
   getProductsByHandleQuery,
+  getProductsByIdsQuery,
   getProductsHandleQuery,
 } from "./queries/product.storefront"
 
@@ -56,6 +57,7 @@ import type {
   MenuQuery,
   PagesQuery,
   ProductsByHandleQuery,
+  ProductsByIdsQuery,
   ProductsHandleQuery,
   SingleCartQuery,
   SingleCollectionByIdQuery,
@@ -68,6 +70,7 @@ import type {
 } from "./types/storefront.generated"
 import { CurrencyCode } from "./types/storefront.types"
 import {
+  MetafieldAccordionItem,
   PlatformAccessToken,
   PlatformCart,
   PlatformCollection,
@@ -110,6 +113,7 @@ export function createShopifyClient() {
   // prettier-ignore
   return {
     shopifyAPI: client,
+    getProductsByIds: async (ids: string[]) => getProductsByIds(client!, ids),
     getProductsHandle: async () => getProductsHandle(client!),
     getMenu: async (handle?: string) => getMenu(client!, handle),
     getProduct: async (id: string) => getProduct(client!, id),
@@ -151,6 +155,15 @@ async function getMenu(
   return {
     items: mappedItems || [],
   }
+}
+
+async function getProductsByIds(client: StorefrontApiClient, ids: string[]) {
+  const response = await client.request<ProductsByIdsQuery>(
+    getProductsByIdsQuery,
+    { variables: { ids } }
+  )
+
+  return response.data?.nodes.map((node) => normalizeProduct(node)) || []
 }
 
 async function getProductsHandle(client: StorefrontApiClient) {
@@ -417,4 +430,61 @@ async function getAdminProduct(client: AdminApiClient, id: string) {
     })),
   }
   return normalizeProduct({ ...response.data?.product, variants })
+}
+
+export async function processProductMetafields(
+  getProductsByIds: (ids: string[]) => Promise<(PlatformProduct | null)[]>,
+  product: PlatformProduct
+): Promise<{
+  faq: MetafieldAccordionItem[]
+  productAccordions: MetafieldAccordionItem[]
+  relatedProducts: PlatformProduct[]
+}> {
+  const parseMetafield = (value: string, key: string) => {
+    try {
+      return JSON.parse(value)
+    } catch (error) {
+      console.error(`Failed to parse ${key} JSON:`, error)
+      return null
+    }
+  }
+
+  const metafieldData = product.metafields.reduce((acc, metafield) => {
+    if (metafield?.key && metafield.value) {
+      acc[metafield.key] = parseMetafield(metafield.value, metafield.key)
+    }
+    return acc
+  }, {} as Record<string, any>)
+
+  const faq = metafieldData.faq?.accordion_items || []
+  const productAccordions =
+    metafieldData.product_accordions?.accordion_items || []
+  const relatedProductIds = metafieldData.related_products || []
+
+  let relatedProducts: PlatformProduct[] = []
+  if (relatedProductIds.length > 0) {
+    try {
+      relatedProducts =
+        (await getProductsByIds(relatedProductIds)).filter(
+          (product): product is PlatformProduct => product !== null
+        ) || []
+    } catch (error) {
+      console.error("Failed to fetch related products:", error)
+    }
+  }
+
+  return { faq, productAccordions, relatedProducts }
+}
+
+export const getProductData = async (productId: string) => {
+  const client = createShopifyClient()
+
+  const product = await client.getProductByHandle(productId)
+
+  if (!product) return null
+
+  const { faq, productAccordions, relatedProducts } =
+    await processProductMetafields(client.getProductsByIds, product)
+
+  return { product, faq, productAccordions, relatedProducts }
 }

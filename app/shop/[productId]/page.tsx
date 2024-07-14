@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import Reviews from "@/views/Product/reviews"
 import TrendingItems from "@/components/trending-items"
-import { createShopifyClient } from "@/lib/shopify"
+import { createShopifyClient, getProductData } from "@/lib/shopify"
 
 import { notFound } from "next/navigation"
 import Gallery from "@/views/Product/gallery"
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/collapsible"
 import { ChevronDownIcon } from "lucide-react"
 import { slugToName } from "@/lib/utils"
-import { MetafieldAccordionItem, PlatformProduct } from "@/lib/shopify/types"
+
 import FAQ from "@/components/faq"
 
 export const generateStaticParams = async () => {
@@ -38,53 +38,16 @@ export const generateStaticParams = async () => {
   )
 }
 
-function processProductMetafields(product: PlatformProduct) {
-  let faq: MetafieldAccordionItem[] = []
-  let relatedProducts = []
-  let productAccordions: MetafieldAccordionItem[] = []
-
-  if (product.metafields.length > 0) {
-    product.metafields.forEach((metafield) => {
-      if (metafield?.key === "faq") {
-        try {
-          faq = JSON.parse(metafield.value).accordion_items
-        } catch (error) {
-          console.error("Failed to parse FAQ JSON:", error)
-        }
-      } else if (metafield?.key === "product_accordions") {
-        try {
-          productAccordions = JSON.parse(metafield.value).accordion_items
-        } catch (error) {
-          console.error("Failed to parse product accordions JSON:", error)
-        }
-      } else if (metafield?.key === "related_products") {
-        // try {
-        //   relatedProducts = JSON.parse(metafield.value)
-        // } catch (error) {
-        //   console.error("Failed to parse related products JSON:", error)
-        // }
-        console.log(metafield.value)
-      }
-
-      console.log(metafield)
-    })
-  }
-
-  return { faq, productAccordions }
-}
-
 async function ProductPage({
   params: { productId },
 }: {
   params: { productId: string }
 }) {
-  const client = createShopifyClient()
+  const data = await getProductData(productId)
 
-  const product = await client.getProductByHandle(productId)
+  if (!data) notFound()
 
-  if (!product) notFound()
-
-  const { faq, productAccordions } = processProductMetafields(product)
+  const { product, faq, productAccordions, relatedProducts } = data
 
   return (
     <main>
@@ -144,13 +107,13 @@ async function ProductPage({
       </section>
       <Reviews variant="secondary" />
       <FAQ questions={faq} />
-      {/* <TrendingItems
-        // products={products}
+      <TrendingItems
+        products={relatedProducts}
         tag="Trending"
         title="Trending"
         variant="secondary"
         desc="Explore our curated collection of the latest and most popular shoe styles."
-      /> */}
+      />
     </main>
   )
 }
