@@ -11,6 +11,21 @@ export const getProductsByIdsQuery = `#graphql
   ${productFragment}
 `
 
+export const getProductsByCollectionQuery = `#graphql
+  query ProductsByCollection($collectionHandle: String!, $limit: Int) {
+    collection(handle: $collectionHandle) {
+      products(first: $limit) {
+        edges {
+          node {
+            ...singleProduct
+          }
+        }
+      }  
+    }
+  }
+  ${productFragment}
+`
+
 export const getProductsHandleQuery = `#graphql
     query ProductsHandle {
       products(first: 250) {

@@ -42,6 +42,7 @@ import {
 } from "./queries/product.admin"
 import {
   getProductQuery,
+  getProductsByCollectionQuery,
   getProductsByHandleQuery,
   getProductsByIdsQuery,
   getProductsHandleQuery,
@@ -56,6 +57,7 @@ import type {
   DeleteCartItemsMutation,
   MenuQuery,
   PagesQuery,
+  ProductsByCollectionQuery,
   ProductsByHandleQuery,
   ProductsByIdsQuery,
   ProductsHandleQuery,
@@ -112,9 +114,9 @@ export function createShopifyClient() {
 
   // prettier-ignore
   return {
-    shopifyAPI: client,
     getProductsByIds: async (ids: string[]) => getProductsByIds(client!, ids),
     getProductsHandle: async () => getProductsHandle(client!),
+    getProductsByCollection: async (collectionHandle: string, limit: number = 10) => getProductsByCollection(client!, collectionHandle, limit),
     getMenu: async (handle?: string) => getMenu(client!, handle),
     getProduct: async (id: string) => getProduct(client!, id),
     getProductByHandle: async (handle: string) => getProductByHandle(client!, handle),
@@ -164,6 +166,23 @@ async function getProductsByIds(client: StorefrontApiClient, ids: string[]) {
   )
 
   return response.data?.nodes.map((node) => normalizeProduct(node)) || []
+}
+
+async function getProductsByCollection(
+  client: StorefrontApiClient,
+  collectionHandle: string,
+  limit: number = 10
+) {
+  const response = await client.request<ProductsByCollectionQuery>(
+    getProductsByCollectionQuery,
+    { variables: { collectionHandle, limit: limit } }
+  )
+
+  return (
+    response.data?.collection?.products?.edges.map((edge) =>
+      normalizeProduct(edge.node)
+    ) || []
+  )
 }
 
 async function getProductsHandle(client: StorefrontApiClient) {

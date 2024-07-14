@@ -1,12 +1,3 @@
-import { Label } from "@/components/ui/label"
-
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import Reviews from "@/views/Product/reviews"
 import TrendingItems from "@/components/trending-items"
@@ -14,7 +5,6 @@ import { createShopifyClient, getProductData } from "@/lib/shopify"
 
 import { notFound } from "next/navigation"
 import Gallery from "@/views/Product/gallery"
-import Variants from "@/views/Product/variants"
 import {
   Collapsible,
   CollapsibleContent,
@@ -24,6 +14,7 @@ import { ChevronDownIcon } from "lucide-react"
 import { slugToName } from "@/lib/utils"
 
 import FAQ from "@/components/faq"
+import ProductOptions from "@/views/Product/product-options"
 
 export const generateStaticParams = async () => {
   const client = createShopifyClient()
@@ -63,31 +54,8 @@ async function ProductPage({
             </div>
           </div>
           <form className="grid gap-4 md:gap-10">
-            {product.options.map((option) => (
-              <Variants
-                key={option.name}
-                title={option.name}
-                values={option.values}
-              />
-            ))}
+            <ProductOptions product={product} />
 
-            <div className="grid gap-2">
-              <Label htmlFor="quantity" className="text-base">
-                Quantity
-              </Label>
-              <Select defaultValue="1">
-                <SelectTrigger className="w-24">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
-                  <SelectItem value="5">5</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
             <p className="">Cost of delivery: $10</p>
             <Button size="lg">Add to cart</Button>
           </form>

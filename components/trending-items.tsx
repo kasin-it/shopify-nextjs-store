@@ -48,10 +48,10 @@ function TrendingItems({
               <Card>
                 <CardContent className="flex flex-col items-start justify-center space-y-2 p-4">
                   <Image
-                    src="/placeholder.svg"
+                    src={product.images[0].url}
                     width="600"
                     height="600"
-                    alt="Shoe"
+                    alt={product.images[0].altText || product.title}
                     className="aspect-video sm:aspect-square overflow-hidden rounded-xl object-cover"
                   />
                   <div className="space-y-1">
@@ -60,7 +60,6 @@ function TrendingItems({
                       {product.priceRange.maxVariantPrice.amount}
                     </p>
                   </div>
-                  {/* <Button>Add to Cart</Button> */}
                 </CardContent>
               </Card>
             </Link>
