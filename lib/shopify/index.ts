@@ -179,7 +179,7 @@ async function getProductsByCollection(
   )
 
   return (
-    response.data?.collection?.products?.edges.map((edge) =>
+    response.data?.collection?.products.edges.map((edge) =>
       normalizeProduct(edge.node)
     ) || []
   )

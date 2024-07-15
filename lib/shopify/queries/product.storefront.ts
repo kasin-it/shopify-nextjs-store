@@ -38,6 +38,18 @@ export const getProductsHandleQuery = `#graphql
     }
   `
 
+export const getProductsCategoriesQuery = `#graphql
+    query ProductsHandle {
+      products(first: 250) {
+        edges {
+          node {
+            category
+          }
+        }
+      }
+    }
+  `
+
 export const getProductQuery = `#graphql
   query SingleProduct($id: ID!) {
     product(id: $id) {
