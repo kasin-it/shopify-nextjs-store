@@ -46,6 +46,7 @@ import {
   getProductsByHandleQuery,
   getProductsByIdsQuery,
   getProductsHandleQuery,
+  getProductsQuery,
 } from "./queries/product.storefront"
 
 import type {
@@ -61,6 +62,7 @@ import type {
   ProductsByHandleQuery,
   ProductsByIdsQuery,
   ProductsHandleQuery,
+  ProductsQuery,
   SingleCartQuery,
   SingleCollectionByIdQuery,
   SingleCollectionQuery,
@@ -115,6 +117,7 @@ export function createShopifyClient() {
   // prettier-ignore
   return {
     getProductsByIds: async (ids: string[]) => getProductsByIds(client!, ids),
+    getProducts: async (query: string, sortKey?: "RELEVANCE" | "BEST_SELLING" | "CREATED_AT" | "PRICE", reverse?: boolean, numProducts?: number, cursor?: string | null) => getProducts(client!, query, sortKey, reverse, numProducts, cursor),
     getProductsHandle: async () => getProductsHandle(client!),
     getProductsByCollection: async (collectionHandle: string, limit: number = 10) => getProductsByCollection(client!, collectionHandle, limit),
     getMenu: async (handle?: string) => getMenu(client!, handle),
@@ -166,6 +169,30 @@ async function getProductsByIds(client: StorefrontApiClient, ids: string[]) {
   )
 
   return response.data?.nodes.map((node) => normalizeProduct(node)) || []
+}
+
+async function getProducts(
+  client: StorefrontApiClient,
+  query: string,
+  sortKey?: "RELEVANCE" | "BEST_SELLING" | "CREATED_AT" | "PRICE",
+  reverse?: boolean,
+  numProducts: number = 250,
+  cursor?: string | null
+) {
+  const response = await client.request<ProductsQuery>(getProductsQuery, {
+    variables: {
+      sortKey,
+      reverse,
+      query,
+      numProducts,
+      cursor,
+    },
+  })
+
+  return (
+    response.data?.products.edges.map((edge) => normalizeProduct(edge.node)) ||
+    []
+  )
 }
 
 async function getProductsByCollection(

@@ -11,8 +11,18 @@ import { Button } from "@/components/ui/button"
 import { ListOrderedIcon } from "lucide-react"
 import Image from "next/image"
 import Filters from "@/views/Shop/filters"
+import { createShopifyClient } from "@/lib/shopify"
+import { PlatformProduct } from "@/lib/shopify/types"
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const client = createShopifyClient()
+
+  const products = await client.getProducts("")
+
+  const { brands, categories } = getBrandsAndCategories(products)
+
+  console.log(brands, categories)
+
   return (
     <div className="container mx-auto px-4 md:px-6 py-8">
       <div className="mb-8">
@@ -94,4 +104,34 @@ export default function ShopPage() {
       </div>
     </div>
   )
+}
+
+function getBrandsAndCategories(products: PlatformProduct[]) {
+  const brands: string[] = []
+  const categories: string[] = []
+
+  products.forEach((product) => {
+    product.metafields.forEach((metafield) => {
+      if (metafield?.key === "brand") {
+        brands.push(metafield.value)
+      }
+      {
+        if (metafield?.key === "sneaker-style") {
+          categories.push(metafield.value)
+        }
+      }
+    })
+  })
+
+  const categories = 
+
+
+
+  return {
+    brands: Object.entries(brands).map(([name, count]) => ({ name, count })),
+    categories: Object.entries(categories).map(([name, count]) => ({
+      name,
+      count,
+    })),
+  }
 }

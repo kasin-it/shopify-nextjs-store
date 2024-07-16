@@ -1,4 +1,4 @@
-import { productFragment } from "../fragments/product"
+import { metaobjectFragment, productFragment } from "../fragments/product"
 
 export const getProductsByIdsQuery = `#graphql
   query ProductsByIds($ids: [ID!]!) {
@@ -9,6 +9,17 @@ export const getProductsByIdsQuery = `#graphql
     }
   }
   ${productFragment}
+`
+
+export const getMetafieldsByIdQuery = `#graphql
+  query ProductsByIds($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      ...on Metafield {
+        ...singleMetaobjectField
+      }  
+    }
+  }
+  ${metaobjectFragment}
 `
 
 export const getProductsByCollectionQuery = `#graphql
