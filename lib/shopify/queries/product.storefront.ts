@@ -11,11 +11,11 @@ export const getProductsByIdsQuery = `#graphql
   ${productFragment}
 `
 
-export const getMetafieldsByIdQuery = `#graphql
-  query ProductsByIds($ids: [ID!]!) {
+export const getMetaobjectsByIdQuery = `#graphql
+  query MetaobjectsByIds($ids: [ID!]!) {
     nodes(ids: $ids) {
-      ...on Metafield {
-        ...singleMetaobjectField
+      ...on Metaobject {
+        ...singleMetaobject
       }  
     }
   }
@@ -49,17 +49,17 @@ export const getProductsHandleQuery = `#graphql
     }
   `
 
-export const getProductsCategoriesQuery = `#graphql
-    query ProductsHandle {
-      products(first: 250) {
-        edges {
-          node {
-            category
-          }
-        }
-      }
-    }
-  `
+// export const getProductsCategoriesQuery = `#graphql
+//     query ProductsCategories {
+//       products(first: 250) {
+//         edges {
+//           node {
+//             category
+//           }
+//         }
+//       }
+//     }
+//   `
 
 export const getProductQuery = `#graphql
   query SingleProduct($id: ID!) {

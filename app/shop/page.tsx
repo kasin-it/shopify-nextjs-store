@@ -21,7 +21,10 @@ export default async function ShopPage() {
 
   const { brands, categories } = getBrandsAndCategories(products)
 
-  console.log(brands, categories)
+  const brandsValues = await client.getMetaobjectsById(brands)
+  const categoriesValues = await client.getMetaobjectsById(categories)
+
+  console.log(brandsValues)
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-8">
@@ -115,23 +118,15 @@ function getBrandsAndCategories(products: PlatformProduct[]) {
       if (metafield?.key === "brand") {
         brands.push(metafield.value)
       }
-      {
-        if (metafield?.key === "sneaker-style") {
-          categories.push(metafield.value)
-        }
+
+      if (metafield?.key === "category") {
+        categories.push(metafield.value)
       }
     })
   })
 
-  const categories = 
-
-
-
   return {
-    brands: Object.entries(brands).map(([name, count]) => ({ name, count })),
-    categories: Object.entries(categories).map(([name, count]) => ({
-      name,
-      count,
-    })),
+    brands: brands,
+    categories: categories,
   }
 }

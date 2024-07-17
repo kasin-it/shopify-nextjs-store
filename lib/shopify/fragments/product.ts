@@ -2,7 +2,7 @@ import { imageFragment } from "./image"
 import { seoFragment } from "./seo"
 
 const metaobjectFragment = `#graphql
-  fragment MetaobjectFields on Metaobject {
+  fragment singleMetaobject on Metaobject {
     id
     handle
     type
@@ -88,7 +88,7 @@ const productFragment = `#graphql
               {namespace: "custom", key: "related_products"},
               {namespace: "custom", key: "faq"},
               {namespace: "custom", key: "brand"},
-              {namespace: "shopify", key: "sneaker-style"},
+              {namespace: "custom", key: "category"},
             ]) {
               key
               value

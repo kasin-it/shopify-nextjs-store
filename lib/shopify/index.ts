@@ -41,6 +41,7 @@ import {
   getProductStatusQuery,
 } from "./queries/product.admin"
 import {
+  getMetaobjectsByIdQuery,
   getProductQuery,
   getProductsByCollectionQuery,
   getProductsByHandleQuery,
@@ -57,6 +58,7 @@ import type {
   CreateCustomerMutation,
   DeleteCartItemsMutation,
   MenuQuery,
+  MetaobjectsByIdsQuery,
   PagesQuery,
   ProductsByCollectionQuery,
   ProductsByHandleQuery,
@@ -95,6 +97,7 @@ import {
   SingleAdminProductQuery,
   WebhookSubscriptionCreateMutation,
 } from "./types/admin/admin.generated"
+import { get } from "http"
 
 export function createShopifyClient() {
   const storeDomain = process.env.SHOPIFY_STORE_DOMAIN || ""
@@ -116,6 +119,7 @@ export function createShopifyClient() {
 
   // prettier-ignore
   return {
+    getMetaobjectsById: async (ids: string[]) => getMetaobjectsById(client!, ids),
     getProductsByIds: async (ids: string[]) => getProductsByIds(client!, ids),
     getProducts: async (query: string, sortKey?: "RELEVANCE" | "BEST_SELLING" | "CREATED_AT" | "PRICE", reverse?: boolean, numProducts?: number, cursor?: string | null) => getProducts(client!, query, sortKey, reverse, numProducts, cursor),
     getProductsHandle: async () => getProductsHandle(client!),
@@ -169,6 +173,17 @@ async function getProductsByIds(client: StorefrontApiClient, ids: string[]) {
   )
 
   return response.data?.nodes.map((node) => normalizeProduct(node)) || []
+}
+
+async function getMetaobjectsById(client: StorefrontApiClient, ids: string[]) {
+  const response = await client.request<MetaobjectsByIdsQuery>(
+    getMetaobjectsByIdQuery,
+    { variables: { ids } }
+  )
+
+  console.log(response.errors?.graphQLErrors)
+
+  return response.data?.nodes.map((node) => node) || []
 }
 
 async function getProducts(
