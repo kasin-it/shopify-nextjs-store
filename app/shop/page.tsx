@@ -19,10 +19,15 @@ export default async function ShopPage() {
 
   const products = await client.getProducts("")
 
-  const { brands, categories } = getDataFromProducts(products)
+  const { brands, categories, sizes, colors, priceMax, priceMin } =
+    getDataFromProducts(products)
 
-  const brandsValues = await client.getMetaobjectsById(brands)
-  const categoriesValues = await client.getMetaobjectsById(categories)
+  const brandsValues = (await client.getMetaobjectsById(brands)).map(
+    (b) => b?.fields[0].value || ""
+  )
+  const categoriesValues = (await client.getMetaobjectsById(categories)).map(
+    (c) => c?.fields[0].value || ""
+  )
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-8">
@@ -76,7 +81,14 @@ export default async function ShopPage() {
         </DropdownMenu> */}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
-        <Filters />
+        <Filters
+          categories={categoriesValues}
+          brands={brandsValues}
+          sizes={sizes}
+          colors={colors}
+          priceMin={priceMin}
+          priceMax={priceMax}
+        />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {/* {products.map((product) => (
             <div
@@ -127,11 +139,11 @@ function getDataFromProducts(products: (PlatformProduct | null)[]) {
     })
 
     product?.options.forEach((option) => {
-      if (option.name === "Size") {
-        sizes.forEach((size) => sizes.add(size))
+      if (option.name === "Shoe size") {
+        option.values.forEach((size) => sizes.add(size))
       }
       if (option.name === "Color") {
-        colors.forEach((color) => colors.add(color))
+        option.values.forEach((color) => colors.add(color))
       }
     })
 

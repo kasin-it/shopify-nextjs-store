@@ -10,7 +10,23 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 
-function Filters() {
+interface FiltersProps {
+  categories: string[]
+  brands: string[]
+  sizes: string[]
+  colors: string[]
+  priceMin: number
+  priceMax: number
+}
+
+function Filters({
+  categories,
+  brands,
+  sizes,
+  colors,
+  priceMin,
+  priceMax,
+}: FiltersProps) {
   return (
     <div className="bg-background flex flex-col p-4 rounded-lg shadow-lg self-start">
       <h3 className="text-lg font-bold mb-4">Filters</h3>
@@ -19,7 +35,16 @@ function Filters() {
           <AccordionTrigger className="text-base">Category</AccordionTrigger>
           <AccordionContent>
             <div className="grid gap-2">
-              <Label className="flex items-center gap-2 font-normal">
+              {categories.map((category) => (
+                <Label
+                  className="flex items-center gap-2 font-normal"
+                  key={category}
+                >
+                  <Checkbox checked={false} onCheckedChange={() => {}} />
+                  {category}
+                </Label>
+              ))}
+              {/* <Label className="flex items-center gap-2 font-normal">
                 <Checkbox checked={false} onCheckedChange={() => {}} />
                 Sneakers
               </Label>
@@ -38,7 +63,7 @@ function Filters() {
               <Label className="flex items-center gap-2 font-normal">
                 <Checkbox checked={false} onCheckedChange={() => {}} />
                 Boots
-              </Label>
+              </Label> */}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -46,7 +71,16 @@ function Filters() {
           <AccordionTrigger className="text-base">Brand</AccordionTrigger>
           <AccordionContent>
             <div className="grid gap-2">
-              <Label className="flex items-center gap-2 font-normal">
+              {brands.map((brand) => (
+                <Label
+                  className="flex items-center gap-2 font-normal"
+                  key={brand}
+                >
+                  <Checkbox checked={false} />
+                  {brand}
+                </Label>
+              ))}
+              {/* <Label className="flex items-center gap-2 font-normal">
                 <Checkbox checked={false} />
                 Nike
               </Label>
@@ -69,7 +103,7 @@ function Filters() {
               <Label className="flex items-center gap-2 font-normal">
                 <Checkbox checked={false} onCheckedChange={() => {}} />
                 New Balance
-              </Label>
+              </Label> */}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -77,7 +111,16 @@ function Filters() {
           <AccordionTrigger className="text-base">Size</AccordionTrigger>
           <AccordionContent>
             <div className="grid gap-2">
-              <Label className="flex items-center gap-2 font-normal">
+              {sizes.map((size) => (
+                <Label
+                  className="flex items-center gap-2 font-normal"
+                  key={size}
+                >
+                  <Checkbox checked={false} />
+                  {size}
+                </Label>
+              ))}
+              {/* <Label className="flex items-center gap-2 font-normal">
                 <Checkbox checked={false} />8
               </Label>
               <Label className="flex items-center gap-2 font-normal">
@@ -90,7 +133,7 @@ function Filters() {
               <Label className="flex items-center gap-2 font-normal">
                 <Checkbox checked={false} />
                 11
-              </Label>
+              </Label> */}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -98,7 +141,16 @@ function Filters() {
           <AccordionTrigger className="text-base">Color</AccordionTrigger>
           <AccordionContent>
             <div className="grid gap-2">
-              <Label className="flex items-center gap-2 font-normal">
+              {colors.map((color) => (
+                <Label
+                  className="flex items-center gap-2 font-normal"
+                  key={color}
+                >
+                  <Checkbox checked={false} />
+                  {color}
+                </Label>
+              ))}
+              {/* <Label className="flex items-center gap-2 font-normal">
                 <Checkbox checked={false} />
                 White
               </Label>
@@ -117,7 +169,7 @@ function Filters() {
               <Label className="flex items-center gap-2 font-normal">
                 <Checkbox checked={false} />
                 Grey
-              </Label>
+              </Label> */}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -131,8 +183,8 @@ function Filters() {
               <div className="bg-primary" />
             </div>
             <div className="flex justify-between text-sm text-muted-foreground mt-2">
-              <span>${20}</span>
-              <span>${30}</span>
+              <span>${priceMin}</span>
+              <span>${priceMax}</span>
             </div>
           </AccordionContent>
         </AccordionItem>

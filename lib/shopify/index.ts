@@ -181,8 +181,6 @@ async function getMetaobjectsById(client: StorefrontApiClient, ids: string[]) {
     { variables: { ids } }
   )
 
-  console.log(response.errors?.graphQLErrors)
-
   return response.data?.nodes.map((node) => node) || []
 }
 
