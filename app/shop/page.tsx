@@ -19,12 +19,10 @@ export default async function ShopPage() {
 
   const products = await client.getProducts("")
 
-  const { brands, categories } = getBrandsAndCategories(products)
+  const { brands, categories } = getDataFromProducts(products)
 
   const brandsValues = await client.getMetaobjectsById(brands)
   const categoriesValues = await client.getMetaobjectsById(categories)
-
-  console.log(brandsValues)
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-8">
@@ -109,24 +107,58 @@ export default async function ShopPage() {
   )
 }
 
-function getBrandsAndCategories(products: PlatformProduct[]) {
-  const brands: string[] = []
-  const categories: string[] = []
+function getDataFromProducts(products: (PlatformProduct | null)[]) {
+  const brands: Set<string> = new Set()
+  const categories: Set<string> = new Set()
+  const sizes: Set<string> = new Set()
+  const colors: Set<string> = new Set()
+  let priceMin: number = 0
+  let priceMax: number = 0
 
   products.forEach((product) => {
-    product.metafields.forEach((metafield) => {
+    product?.metafields.forEach((metafield) => {
       if (metafield?.key === "brand") {
-        brands.push(metafield.value)
+        brands.add(metafield.value)
       }
 
       if (metafield?.key === "category") {
-        categories.push(metafield.value)
+        categories.add(metafield.value)
       }
     })
+
+    product?.options.forEach((option) => {
+      if (option.name === "Size") {
+        sizes.forEach((size) => sizes.add(size))
+      }
+      if (option.name === "Color") {
+        colors.forEach((color) => colors.add(color))
+      }
+    })
+
+    if (product !== null) {
+      const currentMinPrice = parseFloat(
+        product.priceRange.minVariantPrice.amount
+      )
+      const currentMaxPrice = parseFloat(
+        product.priceRange.maxVariantPrice.amount
+      )
+
+      if (currentMinPrice < priceMin) {
+        priceMin = currentMinPrice
+      }
+
+      if (currentMaxPrice > priceMax) {
+        priceMax = currentMaxPrice
+      }
+    }
   })
 
   return {
-    brands: brands,
-    categories: categories,
+    brands: Array.from(brands),
+    categories: Array.from(categories),
+    sizes: Array.from(sizes),
+    colors: Array.from(colors),
+    priceMin: priceMin,
+    priceMax: priceMax,
   }
 }
