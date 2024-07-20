@@ -9,6 +9,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 
 interface FiltersProps {
   categories: string[]
@@ -27,6 +29,63 @@ function Filters({
   priceMin,
   priceMax,
 }: FiltersProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const [selectedFilters, setSelectedFilters] = useState({
+    category: new Set<string>(),
+    brand: new Set<string>(),
+    size: new Set<string>(),
+    color: new Set<string>(),
+  })
+
+  useEffect(() => {
+    const parseSet = (param: string | null) => {
+      if (param === null) return new Set()
+
+      try {
+        const parsed = JSON.parse(param)
+        return new Set(Array.isArray(parsed) ? parsed : [parsed])
+      } catch (e) {
+        return new Set(param ? [param] : [])
+      }
+    }
+
+    setSelectedFilters({
+      category: parseSet(searchParams.get("category")),
+      brand: parseSet(searchParams.get("brand")),
+      size: parseSet(searchParams.get("size")),
+      color: parseSet(searchParams.get("color")),
+    })
+  }, [searchParams])
+
+  const handleFilterChange = (
+    type: keyof typeof selectedFilters,
+    value: string
+  ) => {
+    setSelectedFilters((prev) => {
+      const newSet = new Set(prev[type])
+      if (newSet.has(value)) {
+        newSet.delete(value)
+      } else {
+        newSet.add(value)
+      }
+      return { ...prev, [type]: newSet }
+    })
+  }
+
+  const applyFilters = () => {
+    const params = new URLSearchParams()
+
+    Object.entries(selectedFilters).forEach(([key, values]) => {
+      if (values.size > 0) {
+        params.set(key, JSON.stringify(Array.from(values)))
+      }
+    })
+
+    router.push(`?${params.toString()}`)
+  }
+
   return (
     <div className="bg-background flex flex-col p-4 rounded-lg shadow-lg self-start">
       <h3 className="text-lg font-bold mb-4">Filters</h3>
@@ -40,30 +99,15 @@ function Filters({
                   className="flex items-center gap-2 font-normal"
                   key={category}
                 >
-                  <Checkbox checked={false} onCheckedChange={() => {}} />
+                  <Checkbox
+                    checked={selectedFilters.category.has(category)}
+                    onCheckedChange={() =>
+                      handleFilterChange("category", category)
+                    }
+                  />
                   {category}
                 </Label>
               ))}
-              {/* <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} onCheckedChange={() => {}} />
-                Sneakers
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} onCheckedChange={() => {}} />
-                Running Shoes
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} onCheckedChange={() => {}} />
-                Casual Shoes
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} onCheckedChange={() => {}} />
-                Formal Shoes
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} onCheckedChange={() => {}} />
-                Boots
-              </Label> */}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -76,34 +120,13 @@ function Filters({
                   className="flex items-center gap-2 font-normal"
                   key={brand}
                 >
-                  <Checkbox checked={false} />
+                  <Checkbox
+                    checked={selectedFilters.brand.has(brand)}
+                    onCheckedChange={() => handleFilterChange("brand", brand)}
+                  />
                   {brand}
                 </Label>
               ))}
-              {/* <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                Nike
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                Adidas
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} onCheckedChange={() => {}} />
-                Converse
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                Vans
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                Puma
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} onCheckedChange={() => {}} />
-                New Balance
-              </Label> */}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -116,24 +139,13 @@ function Filters({
                   className="flex items-center gap-2 font-normal"
                   key={size}
                 >
-                  <Checkbox checked={false} />
+                  <Checkbox
+                    checked={selectedFilters.size.has(size)}
+                    onCheckedChange={() => handleFilterChange("size", size)}
+                  />
                   {size}
                 </Label>
               ))}
-              {/* <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />8
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />9
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                10
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                11
-              </Label> */}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -146,30 +158,13 @@ function Filters({
                   className="flex items-center gap-2 font-normal"
                   key={color}
                 >
-                  <Checkbox checked={false} />
+                  <Checkbox
+                    checked={selectedFilters.color.has(color)}
+                    onCheckedChange={() => handleFilterChange("color", color)}
+                  />
                   {color}
                 </Label>
               ))}
-              {/* <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                White
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                Black
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                Red
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                Blue
-              </Label>
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox checked={false} />
-                Grey
-              </Label> */}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -189,7 +184,12 @@ function Filters({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <Button size="sm" variant="outline" className="w-full">
+      <Button
+        size="sm"
+        variant="outline"
+        className="w-full"
+        onClick={applyFilters}
+      >
         Apply Filters
       </Button>
     </div>
