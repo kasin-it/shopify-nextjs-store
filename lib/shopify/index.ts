@@ -121,7 +121,7 @@ export function createShopifyClient() {
   return {
     getMetaobjectsById: async (ids: string[]) => getMetaobjectsById(client!, ids),
     getProductsByIds: async (ids: string[]) => getProductsByIds(client!, ids),
-    getProducts: async (query: string, sortKey?: "RELEVANCE" | "BEST_SELLING" | "CREATED_AT" | "PRICE", reverse?: boolean, numProducts?: number, cursor?: string | null) => getProducts(client!, query, sortKey, reverse, numProducts, cursor),
+    getProducts: async (query: string, sortKey?: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE", reverse?: boolean, numProducts?: number, cursor?: string | null) => getProducts(client!, query, sortKey, reverse, numProducts, cursor),
     getProductsHandle: async () => getProductsHandle(client!),
     getProductsByCollection: async (collectionHandle: string, limit: number = 10) => getProductsByCollection(client!, collectionHandle, limit),
     getMenu: async (handle?: string) => getMenu(client!, handle),

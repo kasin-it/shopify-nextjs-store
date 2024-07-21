@@ -9,8 +9,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useProductFilters } from "@/hooks/use-shop-filters"
 
 interface FiltersProps {
   categories: string[]
@@ -29,62 +28,8 @@ function Filters({
   priceMin,
   priceMax,
 }: FiltersProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-
-  const [selectedFilters, setSelectedFilters] = useState({
-    category: new Set<string>(),
-    brand: new Set<string>(),
-    size: new Set<string>(),
-    color: new Set<string>(),
-  })
-
-  useEffect(() => {
-    const parseSet = (param: string | null) => {
-      if (param === null) return new Set()
-
-      try {
-        const parsed = JSON.parse(param)
-        return new Set(Array.isArray(parsed) ? parsed : [parsed])
-      } catch (e) {
-        return new Set(param ? [param] : [])
-      }
-    }
-
-    setSelectedFilters({
-      category: parseSet(searchParams.get("category")),
-      brand: parseSet(searchParams.get("brand")),
-      size: parseSet(searchParams.get("size")),
-      color: parseSet(searchParams.get("color")),
-    })
-  }, [searchParams])
-
-  const handleFilterChange = (
-    type: keyof typeof selectedFilters,
-    value: string
-  ) => {
-    setSelectedFilters((prev) => {
-      const newSet = new Set(prev[type])
-      if (newSet.has(value)) {
-        newSet.delete(value)
-      } else {
-        newSet.add(value)
-      }
-      return { ...prev, [type]: newSet }
-    })
-  }
-
-  const applyFilters = () => {
-    const params = new URLSearchParams()
-
-    Object.entries(selectedFilters).forEach(([key, values]) => {
-      if (values.size > 0) {
-        params.set(key, JSON.stringify(Array.from(values)))
-      }
-    })
-
-    router.push(`?${params.toString()}`)
-  }
+  const { selectedFilters, handleFilterChange, applyFilters } =
+    useProductFilters()
 
   return (
     <div className="bg-background flex flex-col p-4 rounded-lg shadow-lg self-start">

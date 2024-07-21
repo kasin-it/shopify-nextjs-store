@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { PlatformProduct } from "@/lib/shopify/types"
 
 interface TrendingItemsProps {
-  products: PlatformProduct[]
+  products: (null | PlatformProduct)[]
   tag: string
   title: string
   desc: string
@@ -44,20 +44,20 @@ function TrendingItems({
         </div>
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {products.map((product) => (
-            <Link href={"/shop/" + product.handle} key={product.id}>
+            <Link href={"/shop/" + product?.handle} key={product?.id}>
               <Card>
                 <CardContent className="flex flex-col items-start justify-center space-y-2 p-4">
                   <Image
-                    src={product.images[0].url}
+                    src={product?.images[0].url || "/placeholder.svg"}
                     width="600"
                     height="600"
-                    alt={product.images[0].altText || product.title}
+                    alt={product?.images[0].altText || product?.title || ""}
                     className="aspect-video sm:aspect-square overflow-hidden rounded-xl object-cover"
                   />
                   <div className="space-y-1">
-                    <h3 className="text-lg font-bold">{product.title}</h3>
+                    <h3 className="text-lg font-bold">{product?.title}</h3>
                     <p className="text-muted-foreground">
-                      {product.priceRange.maxVariantPrice.amount}
+                      {product?.priceRange.maxVariantPrice.amount}
                     </p>
                   </div>
                 </CardContent>

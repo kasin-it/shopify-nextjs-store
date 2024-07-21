@@ -1,20 +1,22 @@
-import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-
-import { ListOrderedIcon } from "lucide-react"
-import Image from "next/image"
 import Filters from "@/views/Shop/filters"
 import { createShopifyClient } from "@/lib/shopify"
 import { PlatformProduct } from "@/lib/shopify/types"
+import SearchSection from "@/views/Shop/search-section"
 
-export default async function ShopPage() {
+interface PageProps {
+  searchParams: {
+    brand: string[] | undefined
+    category: string[] | undefined
+    size: string[] | undefined
+    color: string[] | undefined
+    search: string | undefined
+    sortKey: string | undefined
+    priceMin: string | undefined
+    priceMax: string | undefined
+  }
+}
+
+export default async function ShopPage({ searchParams }: PageProps) {
   const client = createShopifyClient()
 
   const products = await client.getProducts("")
@@ -37,49 +39,8 @@ export default async function ShopPage() {
           Browse our selection of the latest shoes.
         </p>
       </div>
-      <div className="flex items-center mb-6">
-        {/* <Input
-          type="search"
-          placeholder="Search for shoes..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="flex-1 mr-4 bg-background text-foreground"
-        /> */}
-        {/* <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-2">
-              <ListOrderedIcon className="w-5 h-5" />
-              Sort by:{" "}
-              {sortBy === "price-asc"
-                ? "Price: Low to High"
-                : sortBy === "price-desc"
-                ? "Price: High to Low"
-                : sortBy === "popularity"
-                ? "Popularity"
-                : "Newest"}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-48">
-            <DropdownMenuRadioGroup
-              value={sortBy}
-              onValueChange={handleSortChange}
-            >
-              <DropdownMenuRadioItem value="price-asc">
-                Price: Low to High
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="price-desc">
-                Price: High to Low
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="popularity">
-                Popularity
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="newest">
-                Newest
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu> */}
-      </div>
+
+      <SearchSection />
       <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
         <Filters
           categories={categoriesValues}
