@@ -20,6 +20,7 @@ export default async function ShopPage({ searchParams }: PageProps) {
   const client = createShopifyClient()
 
   const products = await client.getProducts("")
+  const filteredProducts = client.getProductsBySearchParams(searchParams)
 
   const { brands, categories, sizes, colors, priceMax, priceMin } =
     getDataFromProducts(products)

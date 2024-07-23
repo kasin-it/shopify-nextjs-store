@@ -11,6 +11,35 @@ export const getProductsByIdsQuery = `#graphql
   ${productFragment}
 `
 
+export const getProductsBySearchParamsQuery = `#graphql
+query ProductsBySearchParams(
+  $search: String
+  $sortKey: ProductSortKeys
+  $reverse: Boolean
+  $numProducts: Int!
+  $cursor: String
+) {
+  products(
+    sortKey: $sortKey
+    reverse: $reverse
+    first: $numProducts
+    after: $cursor
+    query: $search
+  ) {
+    edges {
+      node {
+        ...singleProduct
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+${productFragment}
+`
+
 export const getMetaobjectsByIdQuery = `#graphql
   query MetaobjectsByIds($ids: [ID!]!) {
     nodes(ids: $ids) {

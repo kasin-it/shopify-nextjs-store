@@ -15,3 +15,7 @@ export function slugToName(slug: string, separator: string = "-") {
 export function nameToSlug(name: string, separator: string = "-") {
   return name.toLowerCase().split(" ").join(separator)
 }
+
+export function escapeSearchTerm(term: string) {
+  return term.replace(/([:"()[\]{}])/g, "\\$1")
+}

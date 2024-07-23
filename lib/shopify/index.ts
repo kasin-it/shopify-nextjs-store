@@ -46,6 +46,7 @@ import {
   getProductsByCollectionQuery,
   getProductsByHandleQuery,
   getProductsByIdsQuery,
+  getProductsBySearchParamsQuery,
   getProductsHandleQuery,
   getProductsQuery,
 } from "./queries/product.storefront"
@@ -63,6 +64,7 @@ import type {
   ProductsByCollectionQuery,
   ProductsByHandleQuery,
   ProductsByIdsQuery,
+  ProductsBySearchParamsQuery,
   ProductsHandleQuery,
   ProductsQuery,
   SingleCartQuery,
@@ -98,6 +100,7 @@ import {
   WebhookSubscriptionCreateMutation,
 } from "./types/admin/admin.generated"
 import { get } from "http"
+import { escapeSearchTerm } from "../utils"
 
 export function createShopifyClient() {
   const storeDomain = process.env.SHOPIFY_STORE_DOMAIN || ""
@@ -117,11 +120,26 @@ export function createShopifyClient() {
     apiVersion: "2024-07",
   })
 
+  interface SearchQuery {
+    brand: string[] | undefined
+    category: string[] | undefined
+    size: string[] | undefined
+    color: string[] | undefined
+    search: string | undefined
+    sortKey: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE" | undefined
+    priceMin: number | undefined
+    priceMax: number | undefined
+    reverse: boolean | undefined
+    numProducts: number | undefined
+    cursor: number | undefined
+  }
+
   // prettier-ignore
   return {
     getMetaobjectsById: async (ids: string[]) => getMetaobjectsById(client!, ids),
+    getProductsBySearchParams:  async ({ brand, category, size, color, search, sortKey, priceMax, priceMin, reverse, numProducts, cursor}: SearchQuery) => getProductsBySearchParams(client!, search, sortKey,cursor, reverse, numProducts, brand, category, size, color, priceMin, priceMax),
     getProductsByIds: async (ids: string[]) => getProductsByIds(client!, ids),
-    getProducts: async (query: string, sortKey?: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE", reverse?: boolean, numProducts?: number, cursor?: string | null) => getProducts(client!, query, sortKey, reverse, numProducts, cursor),
+    getProducts: async (query: string, sortKey: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE", reverse?: boolean, numProducts?: number, cursor?: string | null) => getProducts(client!, query, sortKey, reverse, numProducts, cursor),
     getProductsHandle: async () => getProductsHandle(client!),
     getProductsByCollection: async (collectionHandle: string, limit: number = 10) => getProductsByCollection(client!, collectionHandle, limit),
     getMenu: async (handle?: string) => getMenu(client!, handle),
@@ -175,6 +193,67 @@ async function getProductsByIds(client: StorefrontApiClient, ids: string[]) {
   return response.data?.nodes.map((node) => normalizeProduct(node)) || []
 }
 
+async function getProductsBySearchParams(
+  client: StorefrontApiClient,
+  search?: string,
+  sortKey: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE" = "TITLE",
+  cursor: number = 0,
+  reverse?: boolean,
+  numProducts?: number,
+  brand?: string[],
+  category?: string[],
+  size?: string[],
+  color?: string[],
+  priceMin?: number,
+  priceMax?: number
+) {
+  let queryString = search ? escapeSearchTerm(search) : "*"
+
+  if (brand && brand.length > 0) {
+    queryString += ` AND (${brand
+      .map((b) => `metafield.custom.brand:${escapeSearchTerm(b)}`)
+      .join(" OR ")})`
+  }
+  if (category && category.length > 0) {
+    queryString += ` AND (${category
+      .map((c) => `product_type:${escapeSearchTerm(c)}`)
+      .join(" OR ")})`
+  }
+  if (size && size.length > 0) {
+    queryString += ` AND (${size
+      .map((s) => `variant:size:${escapeSearchTerm(s)}`)
+      .join(" OR ")})`
+  }
+  if (color && color.length > 0) {
+    queryString += ` AND (${color
+      .map((c) => `variant:color:${escapeSearchTerm(c)}`)
+      .join(" OR ")})`
+  }
+  if (priceMin !== undefined) {
+    queryString += ` AND price:>=${priceMin}`
+  }
+  if (priceMax !== undefined) {
+    queryString += ` AND price:<=${priceMax}`
+  }
+
+  const response = await client.request<ProductsBySearchParamsQuery>(
+    getProductsBySearchParamsQuery,
+    {
+      variables: {
+        search: queryString,
+        sortKey,
+        reverse,
+        numProducts,
+      },
+    }
+  )
+
+  return (
+    response.data?.products.edges.map((edge) => normalizeProduct(edge.node)) ||
+    []
+  )
+}
+
 async function getMetaobjectsById(client: StorefrontApiClient, ids: string[]) {
   const response = await client.request<MetaobjectsByIdsQuery>(
     getMetaobjectsByIdQuery,
@@ -187,7 +266,7 @@ async function getMetaobjectsById(client: StorefrontApiClient, ids: string[]) {
 async function getProducts(
   client: StorefrontApiClient,
   query: string,
-  sortKey?: "RELEVANCE" | "BEST_SELLING" | "CREATED_AT" | "PRICE",
+  sortKey?: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE",
   reverse?: boolean,
   numProducts: number = 250,
   cursor?: string | null
