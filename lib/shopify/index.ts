@@ -137,7 +137,7 @@ export function createShopifyClient() {
   // prettier-ignore
   return {
     getMetaobjectsById: async (ids: string[]) => getMetaobjectsById(client!, ids),
-    getProductsBySearchParams:  async ({ brand, category, size, color, search, sortKey, priceMax, priceMin, reverse, numProducts, cursor}: SearchQuery) => getProductsBySearchParams(client!, search, sortKey,cursor, reverse, numProducts, brand, category, size, color, priceMin, priceMax),
+    getProductsBySearchParams:  async ({ brand, category, size, color, search, sortKey, priceMax, priceMin, reverse, numProducts, cursor}: SearchQuery) => getProductsBySearchParams(client!,brand, category, size, color, search, sortKey, priceMin, priceMax, reverse, numProducts, cursor),
     getProductsByIds: async (ids: string[]) => getProductsByIds(client!, ids),
     getProducts: async (query: string, sortKey?: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE", reverse?: boolean, numProducts?: number, cursor?: string | null) => getProducts(client!, query, sortKey, reverse, numProducts, cursor),
     getProductsHandle: async () => getProductsHandle(client!),
@@ -207,9 +207,11 @@ async function getProductsBySearchParams(
   numProducts?: string,
   cursor?: string
 ) {
+  console.log(category)
+
   let queryString = search ? escapeSearchTerm(search) : "*"
 
-  const buildQueryString = (field, fieldName) => {
+  const addFieldToQueryString = (field: any[], fieldName: string) => {
     if (Array.isArray(field) && field.length > 0) {
       queryString += ` AND (${field
         .map((item) => `${fieldName}:${escapeSearchTerm(item)}`)
@@ -217,45 +219,17 @@ async function getProductsBySearchParams(
     }
   }
 
-  let parsedBrand, parsedCategory, parsedSize, parsedColor
+  // Parse the data and add to query string
+  addFieldToQueryString(safeJsonParse(brand), "metafield.custom.brand")
+  addFieldToQueryString(safeJsonParse(category), "metafield.custom.category")
+  addFieldToQueryString(safeJsonParse(size), "variant:size")
+  addFieldToQueryString(safeJsonParse(color), "variant:color")
 
-  try {
-    parsedBrand = JSON.parse(brand || "")
-  } catch (e) {
-    parsedBrand = null
-  }
+  const validSortKeys = ["TITLE", "BEST_SELLING", "CREATED_AT", "PRICE"]
+  const parsedSortKey = validSortKeys.includes(sortKey as any)
+    ? sortKey
+    : "TITLE"
 
-  try {
-    parsedCategory = JSON.parse(category || "")
-  } catch (e) {
-    parsedCategory = null
-  }
-
-  try {
-    parsedSize = JSON.parse(size || "")
-  } catch (e) {
-    parsedSize = null
-  }
-
-  try {
-    parsedColor = JSON.parse(color || "")
-  } catch (e) {
-    parsedColor = null
-  }
-
-  // Check for parsedBrand being a string
-  if (typeof parsedBrand === "string" && parsedBrand.length > 0) {
-    queryString += ` AND metafield.custom.brand:${escapeSearchTerm(
-      parsedBrand
-    )}`
-  }
-
-  buildQueryString(parsedBrand, "metafield.custom.brand")
-  buildQueryString(parsedCategory, "product_type")
-  buildQueryString(parsedSize, "variant:size")
-  buildQueryString(parsedColor, "variant:color")
-
-  // Parse and check price filters if they are numbers
   const parsedPriceMin = parseInt(priceMin || "", 10)
   if (!isNaN(parsedPriceMin)) {
     queryString += ` AND price:>=${parsedPriceMin}`
@@ -266,25 +240,37 @@ async function getProductsBySearchParams(
     queryString += ` AND price:<=${parsedPriceMax}`
   }
 
+  const parsedReverse = reverse === "true"
+  const parsedNumProducts = parseInt(numProducts || "", 10) || 50
+
+  console.log("Final query string:", queryString)
+
   const response = await client.request<ProductsBySearchParamsQuery>(
     getProductsBySearchParamsQuery,
     {
       variables: {
         search: queryString,
-        sortKey,
-        reverse,
-        numProducts,
+        sortKey: parsedSortKey,
+        reverse: parsedReverse,
+        numProducts: parsedNumProducts,
         cursor,
       },
     }
   )
 
-  console.log(response.errors?.graphQLErrors)
-
   return (
     response.data?.products.edges.map((edge) => normalizeProduct(edge.node)) ||
     []
   )
+}
+
+function safeJsonParse(value: string | undefined): any[] {
+  try {
+    const parsed = JSON.parse(value || "[]")
+    return Array.isArray(parsed) ? parsed : []
+  } catch (e) {
+    return []
+  }
 }
 
 async function getMetaobjectsById(client: StorefrontApiClient, ids: string[]) {

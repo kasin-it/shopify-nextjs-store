@@ -56,11 +56,11 @@ export default async function ShopPage({ searchParams }: PageProps) {
           priceMin={priceMin}
           priceMax={priceMax}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 self-start">
           {filteredProducts.map((product) => (
             <div
               key={product?.id}
-              className="bg-background p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow flex flex-col justify-between"
+              className="bg-background p-4 flex-0 rounded-lg shadow-lg hover:shadow-xl  transition-shadow flex flex-col justify-between"
             >
               <div>
                 <Image
