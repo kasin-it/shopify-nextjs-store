@@ -53,7 +53,7 @@ const productFragment = `#graphql
         node {
           id
           title
-          quantityAvailable
+          # quantityAvailable
           availableForSale
           selectedOptions {
             name

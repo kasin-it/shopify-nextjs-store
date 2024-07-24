@@ -17,13 +17,12 @@ query ProductsBySearchParams(
   $sortKey: ProductSortKeys
   $reverse: Boolean
   $numProducts: Int!
-  $cursor: String
 ) {
   products(
     sortKey: $sortKey
     reverse: $reverse
     first: $numProducts
-    after: $cursor
+    # after: $cursor
     query: $search
   ) {
     edges {

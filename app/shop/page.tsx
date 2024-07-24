@@ -2,17 +2,22 @@ import Filters from "@/views/Shop/filters"
 import { createShopifyClient } from "@/lib/shopify"
 import { PlatformProduct } from "@/lib/shopify/types"
 import SearchSection from "@/views/Shop/search-section"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
 
 interface PageProps {
   searchParams: {
-    brand: string[] | undefined
-    category: string[] | undefined
-    size: string[] | undefined
-    color: string[] | undefined
-    search: string | undefined
-    sortKey: string | undefined
-    priceMin: string | undefined
-    priceMax: string | undefined
+    brand?: string
+    category?: string
+    size?: string
+    color?: string
+    search?: string
+    sortKey?: string
+    priceMin?: string
+    priceMax?: string
+    reverse?: string
+    numProducts?: string
+    cursor?: string
   }
 }
 
@@ -20,7 +25,7 @@ export default async function ShopPage({ searchParams }: PageProps) {
   const client = createShopifyClient()
 
   const products = await client.getProducts("")
-  const filteredProducts = client.getProductsBySearchParams(searchParams)
+  const filteredProducts = await client.getProductsBySearchParams(searchParams)
 
   const { brands, categories, sizes, colors, priceMax, priceMin } =
     getDataFromProducts(products)
@@ -52,29 +57,29 @@ export default async function ShopPage({ searchParams }: PageProps) {
           priceMax={priceMax}
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {/* {products.map((product) => (
+          {filteredProducts.map((product) => (
             <div
-              key={product.id}
+              key={product?.id}
               className="bg-background p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow flex flex-col justify-between"
             >
               <div>
                 <Image
                   src="/placeholder.svg"
-                  alt={product.title}
+                  alt={product?.title || ""}
                   width={300}
                   height={300}
                   className="rounded-lg mb-4 object-cover w-full aspect-square"
                 />
-                <h3 className="text-lg font-bold mb-2">{product.title}</h3>
+                <h3 className="text-lg font-bold mb-2">{product?.title}</h3>
                 <p className="text-muted-foreground mb-4">
-                  ${product.price.toFixed(2)}
+                  {/* ${product?.price.toFixed(2)} */}
                 </p>
               </div>
               <Button size="sm" variant="outline" className="w-full">
                 Add to Cart
               </Button>
             </div>
-          ))} */}
+          ))}
         </div>
       </div>
     </div>

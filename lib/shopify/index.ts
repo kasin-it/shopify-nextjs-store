@@ -121,17 +121,17 @@ export function createShopifyClient() {
   })
 
   interface SearchQuery {
-    brand: string[] | undefined
-    category: string[] | undefined
-    size: string[] | undefined
-    color: string[] | undefined
-    search: string | undefined
-    sortKey: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE" | undefined
-    priceMin: number | undefined
-    priceMax: number | undefined
-    reverse: boolean | undefined
-    numProducts: number | undefined
-    cursor: number | undefined
+    brand?: string
+    category?: string
+    size?: string
+    color?: string
+    search?: string
+    sortKey?: string
+    priceMin?: string
+    priceMax?: string
+    reverse?: string
+    numProducts?: string
+    cursor?: string
   }
 
   // prettier-ignore
@@ -139,7 +139,7 @@ export function createShopifyClient() {
     getMetaobjectsById: async (ids: string[]) => getMetaobjectsById(client!, ids),
     getProductsBySearchParams:  async ({ brand, category, size, color, search, sortKey, priceMax, priceMin, reverse, numProducts, cursor}: SearchQuery) => getProductsBySearchParams(client!, search, sortKey,cursor, reverse, numProducts, brand, category, size, color, priceMin, priceMax),
     getProductsByIds: async (ids: string[]) => getProductsByIds(client!, ids),
-    getProducts: async (query: string, sortKey: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE", reverse?: boolean, numProducts?: number, cursor?: string | null) => getProducts(client!, query, sortKey, reverse, numProducts, cursor),
+    getProducts: async (query: string, sortKey?: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE", reverse?: boolean, numProducts?: number, cursor?: string | null) => getProducts(client!, query, sortKey, reverse, numProducts, cursor),
     getProductsHandle: async () => getProductsHandle(client!),
     getProductsByCollection: async (collectionHandle: string, limit: number = 10) => getProductsByCollection(client!, collectionHandle, limit),
     getMenu: async (handle?: string) => getMenu(client!, handle),
@@ -195,45 +195,75 @@ async function getProductsByIds(client: StorefrontApiClient, ids: string[]) {
 
 async function getProductsBySearchParams(
   client: StorefrontApiClient,
+  brand?: string,
+  category?: string,
+  size?: string,
+  color?: string,
   search?: string,
-  sortKey: "TITLE" | "BEST_SELLING" | "CREATED_AT" | "PRICE" = "TITLE",
-  cursor: number = 0,
-  reverse?: boolean,
-  numProducts?: number,
-  brand?: string[],
-  category?: string[],
-  size?: string[],
-  color?: string[],
-  priceMin?: number,
-  priceMax?: number
+  sortKey?: string,
+  priceMin?: string,
+  priceMax?: string,
+  reverse?: string,
+  numProducts?: string,
+  cursor?: string
 ) {
   let queryString = search ? escapeSearchTerm(search) : "*"
 
-  if (brand && brand.length > 0) {
-    queryString += ` AND (${brand
-      .map((b) => `metafield.custom.brand:${escapeSearchTerm(b)}`)
-      .join(" OR ")})`
+  const buildQueryString = (field, fieldName) => {
+    if (Array.isArray(field) && field.length > 0) {
+      queryString += ` AND (${field
+        .map((item) => `${fieldName}:${escapeSearchTerm(item)}`)
+        .join(" OR ")})`
+    }
   }
-  if (category && category.length > 0) {
-    queryString += ` AND (${category
-      .map((c) => `product_type:${escapeSearchTerm(c)}`)
-      .join(" OR ")})`
+
+  let parsedBrand, parsedCategory, parsedSize, parsedColor
+
+  try {
+    parsedBrand = JSON.parse(brand || "")
+  } catch (e) {
+    parsedBrand = null
   }
-  if (size && size.length > 0) {
-    queryString += ` AND (${size
-      .map((s) => `variant:size:${escapeSearchTerm(s)}`)
-      .join(" OR ")})`
+
+  try {
+    parsedCategory = JSON.parse(category || "")
+  } catch (e) {
+    parsedCategory = null
   }
-  if (color && color.length > 0) {
-    queryString += ` AND (${color
-      .map((c) => `variant:color:${escapeSearchTerm(c)}`)
-      .join(" OR ")})`
+
+  try {
+    parsedSize = JSON.parse(size || "")
+  } catch (e) {
+    parsedSize = null
   }
-  if (priceMin !== undefined) {
-    queryString += ` AND price:>=${priceMin}`
+
+  try {
+    parsedColor = JSON.parse(color || "")
+  } catch (e) {
+    parsedColor = null
   }
-  if (priceMax !== undefined) {
-    queryString += ` AND price:<=${priceMax}`
+
+  // Check for parsedBrand being a string
+  if (typeof parsedBrand === "string" && parsedBrand.length > 0) {
+    queryString += ` AND metafield.custom.brand:${escapeSearchTerm(
+      parsedBrand
+    )}`
+  }
+
+  buildQueryString(parsedBrand, "metafield.custom.brand")
+  buildQueryString(parsedCategory, "product_type")
+  buildQueryString(parsedSize, "variant:size")
+  buildQueryString(parsedColor, "variant:color")
+
+  // Parse and check price filters if they are numbers
+  const parsedPriceMin = parseInt(priceMin || "", 10)
+  if (!isNaN(parsedPriceMin)) {
+    queryString += ` AND price:>=${parsedPriceMin}`
+  }
+
+  const parsedPriceMax = parseInt(priceMax || "", 10)
+  if (!isNaN(parsedPriceMax)) {
+    queryString += ` AND price:<=${parsedPriceMax}`
   }
 
   const response = await client.request<ProductsBySearchParamsQuery>(
@@ -244,9 +274,12 @@ async function getProductsBySearchParams(
         sortKey,
         reverse,
         numProducts,
+        cursor,
       },
     }
   )
+
+  console.log(response.errors?.graphQLErrors)
 
   return (
     response.data?.products.edges.map((edge) => normalizeProduct(edge.node)) ||
